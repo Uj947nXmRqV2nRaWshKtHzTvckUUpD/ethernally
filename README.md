@@ -2,7 +2,7 @@
 
 ## Your Android companion for wireless connectivity
 
-### Features:
+### Features
 
 -Automatically adds wifi adb connection capability at boot
 -Connects through adb via wifi
@@ -16,15 +16,14 @@ It might ask to plug USB cable (device-PC) for resolving potential connectivity 
 
 
 
-### Requires:
+### Requirements
 
 -scrpy installed or set to system PATH
 -clone it from: https://github.com/Genymobile/scrcpy
 -requires the android to be rooted (you can use magisk) to be able to modify Android props
 
 
-### To run:
->clone from github
+### How To Run
 ```
 dos2unix ethernally.sh #might be needed to convert line endings to unix format
 chmod +x ethernally.sh #make the script executable
