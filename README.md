@@ -22,3 +22,10 @@ It might ask to plug USB cable (device-PC) for resolving potential connectivity 
 ```
 >scrpy installed or set to system PATH
 ```
+
+### To run:
+```
+>clone from github
+>dos2unix ethernally.sh #might be needed to convert line endings to unix format
+>simply run the script: ethernally.sh and follow the wizzard guide
+```
