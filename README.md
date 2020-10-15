@@ -2,7 +2,7 @@
 
 ## Your Android companion for wireless connectivity
 
-### <summary>Features</summary>
+### <details><summary>Features</summary>
 <p>
 - Automatically adds wifi adb connection capability at boot
 - Connects through adb via wifi
