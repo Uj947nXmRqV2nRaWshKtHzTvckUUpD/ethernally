@@ -2,11 +2,8 @@
 
 ## Your Android companion for wireless connectivity
 
-<details>
-  <summary>
-    
-  ###Features
-  </summary>
+
+  <summary>Features</summary>
   
 * Automatically adds wifi adb connection capability at boot
 * Connects through adb via wifi
@@ -20,13 +17,13 @@
 It might ask to plug USB cable (device-PC) for resolving potential connectivity issues in USB debugging
 
 
+<details>
+<summary>Requirements</summary> 
 
-### Requirements
-
-- scrpy installed or set to system PATH
-- clone it from: https://github.com/Genymobile/scrcpy
-- requires the android to be rooted (you can use magisk) to be able to modify Android props
-
+* scrpy installed or set to system PATH
+* clone it from: https://github.com/Genymobile/scrcpy
+* requires the android to be rooted (you can use magisk) to be able to modify Android props
+</details>
 
 ### How To Run
 ```
