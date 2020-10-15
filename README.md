@@ -21,6 +21,7 @@ It might ask to plug USB cable (device-PC) for resolving potential connectivity 
 
 ```
 >scrpy installed or set to system PATH
+>clone it from: https://github.com/Genymobile/scrcpy
 ```
 
 ### To run:
