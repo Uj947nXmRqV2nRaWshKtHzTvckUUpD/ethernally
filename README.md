@@ -3,6 +3,7 @@
 ## Your Android companion for wireless connectivity
 
 <details><summary>Features</summary>
+  
 * Automatically adds wifi adb connection capability at boot
 * Connects through adb via wifi
 * Mirrors your screen wirelessly with scrcpy
