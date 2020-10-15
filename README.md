@@ -28,3 +28,4 @@ It might ask to plug USB cable (device-PC) for resolving potential connectivity 
 >clone from github
 >dos2unix ethernally.sh #might be needed to convert line endings to unix format
 >simply run the script: ethernally.sh and follow the wizzard guide
+```
