@@ -3,6 +3,7 @@
 ## Your Android companion for wireless connectivity
 
 ### Features:
+
 -Automatically adds wifi adb connection capability at boot
 -Connects through adb via wifi
 -Mirrors your screen wirelessly with scrcpy
@@ -16,6 +17,7 @@ It might ask to plug USB cable (device-PC) for resolving potential connectivity 
 
 
 ### Requires:
+
 -scrpy installed or set to system PATH
 -clone it from: https://github.com/Genymobile/scrcpy
 -requires the android to be rooted (you can use magisk) to be able to modify Android props
