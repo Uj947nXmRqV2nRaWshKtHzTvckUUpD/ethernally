@@ -1,7 +1,9 @@
 # ethernally
+
 ##Your Android companion for wireless connectivity
 
 ###Features:
+
 ```
 >automatically adds wifi adb connection capability at boot
 >connects through adb via wifi
@@ -16,6 +18,7 @@ It might ask to plug USB cable (device-PC) for resolving potential connectivity 
 
 
 ###Requires:
+
 ```
 >scrpy installed or set to system PATH
 ```
