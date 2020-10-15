@@ -3,14 +3,12 @@
 ## Your Android companion for wireless connectivity
 
 <details><summary>Features</summary>
-<p>
 * Automatically adds wifi adb connection capability at boot
 * Connects through adb via wifi
 * Mirrors your screen wirelessly with scrcpy
 * Starts a shell on your device
 * Works in linux/cygwin
 * Tackles all scenarios that could get you into issues. It even finds a way when wifi is turned off
-</p>
 </details>
 
 !Note:
