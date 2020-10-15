@@ -10,7 +10,7 @@
 * Automatically adds wifi adb connection capability at boot
 * Connects through adb via wifi
 * Mirrors your screen wirelessly with scrcpy
-* Starts a shell on your device
+* Drops you to a wireless shell on the device
 * Works in linux/cygwin
 * Tackles all scenarios that could get you into issues. It even finds a way when wifi is turned off
 </details>
