@@ -2,6 +2,7 @@
 
 ### Your Android companion for wireless connectivity
 
+![alt text](https://i.imgur.com/8T2RtY7.png)
 
 <details>
   <summary>Features</summary>
