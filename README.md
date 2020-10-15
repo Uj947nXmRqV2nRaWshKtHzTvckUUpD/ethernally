@@ -11,7 +11,8 @@ Features:
 >works in linux/cygwin
 >tackles all scenarios that could get you into issues. It even finds a way when wifi is turned off
 
-!Note - it might ask you to plug USB cable between device-PC for resolving potential connectivity issues in USB debugging mode
+!Note:
+It might ask to plug USB cable (device-PC) for resolving potential connectivity issues in USB debugging
 ```
 
 
