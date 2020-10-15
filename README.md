@@ -13,9 +13,6 @@
 * Tackles all scenarios that could get you into issues. It even finds a way when wifi is turned off
 </details>
 
-!Note:
-It might ask to plug USB cable (device-PC) for resolving potential connectivity issues in USB debugging
-
 
 <details>
 <summary>Requirements</summary> 
@@ -23,9 +20,12 @@ It might ask to plug USB cable (device-PC) for resolving potential connectivity 
 * scrpy installed or set to system PATH
 * clone it from: https://github.com/Genymobile/scrcpy
 * requires the android to be rooted (you can use magisk) to be able to modify Android props
+* It might ask to plug USB cable (device-PC) for resolving potential connectivity issues in USB debugging
 </details>
 
-### How To Run
+<details>
+  <summary>How To Run</summary> 
+  
 ```
 dos2unix ethernally.sh #might be needed to convert line endings to unix format
 chmod +x ethernally.sh #make the script executable
@@ -34,3 +34,4 @@ chmod +x ethernally.sh #make the script executable
 ```
 ./ethernally.sh
 ```
+  </details>
