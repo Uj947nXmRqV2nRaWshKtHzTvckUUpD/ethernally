@@ -27,8 +27,11 @@ It might ask to plug USB cable (device-PC) for resolving potential connectivity 
 ### To run:
 
 >clone from github
->dos2unix ethernally.sh #might be needed to convert line endings to unix format
->simply run the script and follow the wizzard guide
 ```
-ethernally.sh
+dos2unix ethernally.sh #might be needed to convert line endings to unix format
+chmod +x ethernally.sh #make the script executable
+```
+>simply run the script from its folder and follow the wizzard guide
+```
+./ethernally.sh
 ```
