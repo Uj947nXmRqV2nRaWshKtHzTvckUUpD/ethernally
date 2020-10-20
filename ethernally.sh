@@ -2,7 +2,10 @@
 
 #TODO
 #first retry last known wifi connection (in case wifi is already turned on) - this implies saving it in a local temp file
+    ##adb connect <last_known_ip>:5555
+    #adb -s <last_known_ip>:5555 shell
 #if wifi turned off initially,first suggest turning on wifi instead of waiting for usb cable
+
 
 #this script automatically sets permanent adb via wifi and eventually start srccpy
 
