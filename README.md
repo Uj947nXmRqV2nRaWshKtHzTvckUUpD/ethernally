@@ -1,6 +1,6 @@
 # ethernally
 
-### Your Android companion for wireless screen mirroring
+### Your scrcpy companion for Android wireless screen mirroring
 
 ![alt text](https://i.imgur.com/0DEj5A8.png)
 
