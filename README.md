@@ -8,21 +8,21 @@
   <summary>Features</summary>
  
 * Mirrors your screen wirelessly with scrcpy
-* Automatically adds wifi adb connection capability at boot [root only]
-* Connects through adb via WiFi
-* Remembers last known working WiFi IP for fast connection
+* Automatically adds Wi-Fi adb connection capability at boot [root only]
+* Connects through adb via Wi-Fi
+* Remembers last known working Wi-Fi IP for fast connection
 * Drops you to a wireless shell on the device
 * Works in Linux and in Windows via cygwin or WSL (Windows Subsystem for Linux)
-* Tackles all scenarios that could get you into issues. It even finds a way when wifi is turned off!
+* Tackles all scenarios that could get you into issues. It even finds a way when Wi-Fi is turned off!
 </details>
 
 
 <details>
 <summary>Requirements</summary> 
 
-* scrpy installed or set to system PATH (clone from: https://github.com/Genymobile/scrcpy)
-* requires the android to be rooted (you can use magisk). This is required to permanently set Android props to allow WiFi adb connections at all times
-* It might ask to plug USB cable (device-PC) for resolving potential connectivity issues in USB debugging mode
+* scrpy must be installed or set to system PATH (clone from: https://github.com/Genymobile/scrcpy)
+* To permanently set Android props to allow Wi-Fi adb connections at all times, it is required to have the device rooted (you can use magisk).
+* You might need an USB cable for resolving potential connectivity issues in USB debugging mode. If the tool asks for it, just plug it between your device and your PC
 </details>
 
 <details>
@@ -32,7 +32,7 @@
 dos2unix ethernally.sh #might be needed to convert line endings to unix format
 chmod +x ethernally.sh #make the script executable
 ```
->simply run the script from its folder (`cd ethernally`) and follow the wizzard guide
+>simply run the script from its folder (`cd ethernally`) and follow the intuitive wizzard guide
 ```
 ./ethernally.sh
 ```
