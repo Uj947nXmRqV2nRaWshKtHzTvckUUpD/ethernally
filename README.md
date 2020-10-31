@@ -32,8 +32,14 @@
 dos2unix ethernally.sh #might be needed to convert line endings to unix format
 chmod +x ethernally.sh #make the script executable
 ```
->simply run the script from its folder and follow the wizzard guide
+>simply run the script from its folder (`cd ethernally`) and follow the wizzard guide
 ```
 ./ethernally.sh
+```
+>you could also add it to system path (linux) or to the environment variables (cygwin), and call it from anywhere
+>alternatively you could create a symlink in your preferred location (eg. Desktop)
+>you could even add a shortcut on windows to launch screen mirroring upon execution. To do that, set shortcut's target similar to this:
+```
+C:\cygwin\bin\mintty.exe /usr/bin/bash --login "/cygdrive/c/GitHub/ethernally/ethernally.sh"
 ```
   </details>
