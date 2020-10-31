@@ -2,9 +2,6 @@
 
 #this script automatically sets permanent adb via wifi and eventually start srccpy through WiFi
 
-#TODO
-#if wifi turned off initially,first suggest turning on wifi instead of waiting for usb cable
-
 #set the default adbd listening port
 port="5555"
 
@@ -223,11 +220,10 @@ function mirror() {
 #MAIN
 
 DIRECTORY=$(cd $(dirname "$(readlink -f "$0")") && pwd)
-echo "Running script from $DIRECTORY"
+#echo "Running script from $DIRECTORY"
 
 last_working_device="$DIRECTORY/last_working_device.conf"
 touch "${last_working_device}"
-echo "last_working_device: ${last_working_device}"
 
 #CASES
 #usb	wifi
@@ -252,6 +248,7 @@ if [[ -z ${socket} ]]; then
     socket="null" #set to null so that adb connect fails
 fi
 echo "socket: ${socket}"
+echo ""
 
 echo "Trying adb connection.."
 adb disconnect >/dev/null #upon reboot, sometimes even if connected, shell will give "error: closed" on first attempt, but on second will work. Need to disconnect and reconnect to make sure the connection is ok
@@ -275,6 +272,7 @@ if [[ ${status} == *cannot* ]]; then
     status=$(adb connect ${socket})
     if [[ ${status} == *cannot* ]]; then
         echo "Could not connect via adb to last known WiFi device"
+        echo ""
         connected="0"
     else
         echo "Connected via adb to last known WiFi device:"
@@ -285,12 +283,13 @@ if [[ ${status} == *cannot* ]]; then
 
 else
     echo "Connected via adb to WiFi device"
+    echo ""
     connected="1"
 fi
 
 #0 if failed ; 1 if connected
-echo "connected: ${connected}"
-echo "socket: ${socket}"
+#echo "connected: ${connected}"
+#echo "socket: ${socket}"
 
 #EXAMPLE ERRORS:
 #cannot connect to <wlan0_IP>:5555: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (10060)
@@ -299,17 +298,20 @@ echo "socket: ${socket}"
 if [[ ${connected} == 1 && ! -z "${socket}" && ${socket} != "null" ]]; then #(device is already attached via (tcp/wifi)). Case (wifi 1 ; usb 0) OR (wifi 1 ; usb 1)
     #WARNING! there is a bug that after being disconnected, still appears in devices list
 
-    echo "connected: ${connected}"
-    echo "socket: ${socket}"
+    #echo "connected: ${connected}"
+    #echo "socket: ${socket}"
 
     #check if phone rooted
     echo "Checking root.."
-    adb -s "${socket}" shell su --command "id -u" #try to get attached device wlan0 ip
-    if [[ $? != 0 ]]; then
-        echo "Your phone needs to be rooted to permanently set WiFi adb connectivity"
+    elevated_UID=$(adb -s "${socket}" shell su --command "id -u" | sed 's/\r$//g') #try to get attached device wlan0 ip
+    #echo "elevated_UID: ${elevated_UID}"
+
+    if [[ ${elevated_UID} != "0" ]]; then
+        echo "Your phone needs to be rooted for allowing permanent WiFi connectivity through ADB"
         exit 1
     else
         echo "Device is rooted. Moving on.."
+        echo ""
     fi
 
     adb -s "${socket}" shell su --command "adbd --version" >/dev/null #try to get adb daemon version on android through wifi only . return "error: closed" in case it cannot run the command
