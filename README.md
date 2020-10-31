@@ -47,6 +47,7 @@ C:\cygwin\bin\mintty.exe /usr/bin/bash --login "/cygdrive/c/GitHub/ethernally/et
 
 <details>
   <summary>How To Update</summary>
+  
 * To update the script, simply pull latest changes from the git repository:
   
 ```
