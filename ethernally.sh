@@ -129,8 +129,24 @@ function usb_connection() {
     socket="${wlan0_IP}:${port}"
     echo "socket: ${socket}"
 
+    status=$(adb connect ${socket})
+    #adb returns exit code 0 even if cannot connect. not reliable...
+
+    if [[ ${status} == *cannot* ]]; then
+        echo "Could not connect via adb to WiFi device"
+        connected="0"
+    else
+        echo "Connected via adb to WiFi device"
+        connected="1"
+    fi
+
     echo "Connecting via wifi.."
     adb connect "${socket}" #reconnect to shell via wifi. You can unplug USB cable at this stage. scrcpy should work now
+
+    #0 if failed ; 1 if connected
+    echo "connected: ${connected}"
+
+    echo "${socket}" >${last_known_socket}
 
     echo "Device ready!"
 
@@ -186,8 +202,11 @@ function mirror() {
 
 #MAIN
 
-DIRECTORY=$(cd $(dirname $0) && pwd)
+DIRECTORY=$(cd $(dirname "$(readlink -f "$0")") && pwd)
 echo "Running script from $DIRECTORY"
+
+last_known_socket="$DIRECTORY/last_known_socket.conf"
+echo "last_known_socket: ${last_known_socket}"
 
 #CASES
 #usb	wifi
@@ -220,10 +239,22 @@ status=$(adb connect ${socket})
 #adb returns exit code 0 even if cannot connect. not reliable...
 
 if [[ ${status} == *cannot* ]]; then
-    echo "Could not connect via adb to any WiFi device"
+    echo "Could not connect via adb to any detected WiFi device"
     connected="0"
+    echo "Trying last know working socket.."
+
+    socket=$(cat ${last_known_socket})
+    status=$(adb connect ${socket})
+    if [[ ${status} == *cannot* ]]; then
+        echo "Could not connect via adb to last known WiFi device"
+        connected="0"
+    else
+        echo "Connected via adb to last known WiFi device"
+        connected="1"
+    fi
+
 else
-    echo "Connected via adb to any WiFi device"
+    echo "Connected via adb to WiFi device"
     connected="1"
 fi
 
@@ -259,6 +290,7 @@ if [[ ${connected} && ! -z "${socket}" && ${socket} != "null" ]]; then #(device 
             adb -s "${socket}" shell su --command "getprop persist.adb.tcp.port" && #set adbd persistent(boot) tcp port
             echo ""
         #echo "Goodbye!"
+        echo "${socket}" >${last_known_socket}
         mirror
 
         sleep 3                #wait for scrcpy to start mirroring
