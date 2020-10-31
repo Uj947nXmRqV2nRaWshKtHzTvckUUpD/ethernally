@@ -12,7 +12,7 @@
 * Remembers last known working WiFi IP for fast connection
 * Mirrors your screen wirelessly with scrcpy
 * Drops you to a wireless shell on the device
-* Works in linux/cygwin
+* Works in Linux and in Windows via cygwin or WSL (Windows Subsystem for Linux)
 * Tackles all scenarios that could get you into issues. It even finds a way when wifi is turned off
 </details>
 
