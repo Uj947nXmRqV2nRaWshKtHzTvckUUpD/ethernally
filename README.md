@@ -1,6 +1,6 @@
 # ethernally
 
-### Your Android companion for wireless connectivity
+### Your [rooted] Android companion for wireless connectivity
 
 ![alt text](https://i.imgur.com/0DEj5A8.png)
 
