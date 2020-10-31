@@ -264,6 +264,8 @@ function mirror() {
 
 #MAIN
 
+clear
+
 DIRECTORY=$(cd $(dirname "$(readlink -f "$0")") && pwd)
 #echo "Running script from $DIRECTORY"
 
@@ -285,7 +287,7 @@ if [[ $? != 0 ]]; then
 fi
 
 #try wifi connection first
-echo "Trying Wi-Fi connection first.."
+echo "Attempting Wi-Fi connection first.."
 socket=$(adb devices -l | grep ${port} | awk '{print $1}') #try to get attached device wlan0 ip
 
 if [[ -z ${socket} ]]; then
@@ -295,14 +297,14 @@ fi
 echo "socket: ${socket}"
 echo ""
 
-echo "Trying adb connection.."
+echo "Trying connection wirelessy via ADB. Please wait..."
 adb disconnect >/dev/null #upon reboot, sometimes even if connected, shell will give "error: closed" on first attempt, but on second will work. Need to disconnect and reconnect to make sure the connection is ok
 #adb kill-server
 status=$(adb connect ${socket})
 #adb returns exit code 0 even if it cannot connect. not reliable...
 
 if [[ ${status} == *cannot* ]]; then
-    echo "Could not connect via adb to any detected WiFi device"
+    echo "Could not connect via ADB to any detected WiFi device"
     connected="0"
 
     echo ""
@@ -325,11 +327,11 @@ if [[ ${status} == *cannot* ]]; then
 
             status=$(adb connect ${socket})
             if [[ ${status} == *cannot* ]]; then
-                echo "Could not connect via adb to last known WiFi device"
+                echo "Could not connect via ADB to last known WiFi device"
                 echo ""
                 connected="0"
             else
-                echo "Connected via adb to last known WiFi device:"
+                echo "Connected via ADB to last known WiFi device:"
                 cat "${last_working_device}"
                 echo ""
                 connected="1"
