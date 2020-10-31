@@ -135,6 +135,7 @@ function usb_connection() {
     #if device is not rooted
     if [[ ${rooted} == 0 ]]; then
         echo "Device is not rooted. Moving on.."
+        adb tcpip 5555
 
     else
 
@@ -401,6 +402,7 @@ if [[ ${connected} == 1 && ! -z "${socket}" && ${socket} != "null" ]]; then #(de
             set_last_working_device_info
             print_connections
             mirror
+            success_message
             sleep 3                #wait for scrcpy to start mirroring
             adb -s ${socket} shell #uncomment to get you straight into android shell (you can comment this line)
             #from here you can 'su -' to drop to root shell
@@ -413,6 +415,7 @@ if [[ ${connected} == 1 && ! -z "${socket}" && ${socket} != "null" ]]; then #(de
             #echo "socket: ${socket}"
             print_connections
             mirror
+            success_message
             sleep 3                #wait for scrcpy to start mirroring
             adb -s ${socket} shell #uncomment to get you straight into android shell (you can comment this line)
             #from here you can 'su -' to drop to root shell
@@ -429,6 +432,7 @@ else #cases: (wifi 0 ; usb 0) OR (wifi 0 ; USB 1)
     #echo "socket: ${socket}"
     print_connections
     mirror
+    success_message
     sleep 3                #wait for scrcpy to start mirroring
     adb -s ${socket} shell #uncomment to get you straight into android shell (you can comment this line)
     #from here you can 'su -' to drop to root shell
