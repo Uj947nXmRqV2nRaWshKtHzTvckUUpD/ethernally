@@ -1,18 +1,14 @@
 #!/bin/sh
 
-#TODO
-#first retry last known wifi connection (in case wifi is already turned on) - this implies saving it in a local temp file
-##adb connect <last_known_ip>:5555
-#adb -s <last_known_ip>:5555 shell
-#if wifi turned off initially,first suggest turning on wifi instead of waiting for usb cable
+#this script automatically sets permanent adb via wifi and eventually start srccpy through WiFi
 
-#this script automatically sets permanent adb via wifi and eventually start srccpy
+#TODO
+#if wifi turned off initially,first suggest turning on wifi instead of waiting for usb cable
 
 #set the default adbd listening port
 port="5555"
 
-#FUNCTIONS
-#order matters
+#FUNCTIONS (order matters!)
 
 function get_device_serial() {
 
@@ -74,6 +70,26 @@ function get_wifi_connection() {
 
 }
 
+function set_last_working_device_info {
+
+        echo "${socket}" > ${last_working_device}
+        manufacturer=$(adb -s "${socket}" shell 'su --command "getprop ro.product.manufacturer"') #Manufacturer
+        echo "Manufacturer: ${manufacturer}" >> ${last_working_device}
+
+        android_version=$(adb -s "${socket}" shell 'su --command "getprop ro.build.version.release"') #device android version
+        echo "Android Version: ${android_version}" >> ${last_working_device}
+
+        sdk_version=$(adb -s "${socket}" shell 'su --command "getprop ro.build.version.sdk"') #sdk version
+        echo "SDK Version: ${sdk_version}" >> ${last_working_device}
+
+        product_name=$(adb -s "${socket}" shell 'su --command "getprop ro.product.name"') #product name
+        echo "Product Name: ${product_name}" >> ${last_working_device}
+
+        model=$(adb -s "${socket}" shell 'su --command "getprop ro.product.model"') #device model
+        echo "Model: ${model}" >> ${last_working_device}
+
+}
+
 function usb_connection() {
 
     echo "Could not connect via WiFi, switching to USB mode"
@@ -87,7 +103,11 @@ function usb_connection() {
     #adb kill-server
     #sleep 1
 
-    echo "Checking if USB cable is connected.."
+    echo ""
+    echo "Please plug USB cable and enable USB debugging (To unlock the hidden Developer tools/options menu, go to Android Settings > About > Press on 'build number' 7 times. Then go to android settings > developer tools/options and enable USB debugging)"
+
+    echo ""
+    echo "Checking if USB cable is connected and USB debugging enabled.."
 
     check_usb_connection
 
@@ -135,22 +155,22 @@ function usb_connection() {
     if [[ ${status} == *cannot* ]]; then
         echo "Could not connect via adb to WiFi device"
         connected="0"
-    else
-        echo "Connected via adb to WiFi device"
+    else #Wi-Fi connectivity worked
+        echo "Connecting via wifi.."
+        adb connect "${socket}" #reconnect to shell via wifi. You can unplug USB cable at this stage. scrcpy should work now
+
+        #0 if failed ; 1 if connected
         connected="1"
+        echo "connected: ${connected}"
+
+        #set last known working device
+        set_last_working_device_info
+       
+        echo "Device ready!"
+
+        echo ""
     fi
 
-    echo "Connecting via wifi.."
-    adb connect "${socket}" #reconnect to shell via wifi. You can unplug USB cable at this stage. scrcpy should work now
-
-    #0 if failed ; 1 if connected
-    echo "connected: ${connected}"
-
-    echo "${socket}" >${last_known_socket}
-
-    echo "Device ready!"
-
-    echo ""
 }
 
 function mirror() {
@@ -205,8 +225,9 @@ function mirror() {
 DIRECTORY=$(cd $(dirname "$(readlink -f "$0")") && pwd)
 echo "Running script from $DIRECTORY"
 
-last_known_socket="$DIRECTORY/last_known_socket.conf"
-echo "last_known_socket: ${last_known_socket}"
+last_working_device="$DIRECTORY/last_working_device.conf"
+touch "${last_working_device}"
+echo "last_working_device: ${last_working_device}"
 
 #CASES
 #usb	wifi
@@ -241,15 +262,24 @@ status=$(adb connect ${socket})
 if [[ ${status} == *cannot* ]]; then
     echo "Could not connect via adb to any detected WiFi device"
     connected="0"
-    echo "Trying last know working socket.."
 
-    socket=$(cat ${last_known_socket})
+    echo ""
+    echo "Trying last known working socket.."
+
+    last_working_IP=$(cat ${last_working_device} | grep -E -o "((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){1,3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)" )
+    echo "Last known working IP: ${last_working_IP}"
+    last_Working_port=$(cat ${last_working_device} | grep ${last_working_IP} | awk -F [:] '{print $2}')
+    echo "Last known working port: ${last_Working_port}"
+    socket="${last_working_IP}:${last_Working_port}"
+    echo "Last known working socket: ${socket}"
     status=$(adb connect ${socket})
     if [[ ${status} == *cannot* ]]; then
         echo "Could not connect via adb to last known WiFi device"
         connected="0"
     else
-        echo "Connected via adb to last known WiFi device"
+        echo "Connected via adb to last known WiFi device:"
+        cat "${last_working_device}"
+        echo ""
         connected="1"
     fi
 
@@ -260,13 +290,17 @@ fi
 
 #0 if failed ; 1 if connected
 echo "connected: ${connected}"
+echo "socket: ${socket}"
 
 #EXAMPLE ERRORS:
 #cannot connect to <wlan0_IP>:5555: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (10060)
 #cannot resolve host 'null' and port 5555: No such host is known. (11001)
 
-if [[ ${connected} && ! -z "${socket}" && ${socket} != "null" ]]; then #(device is already attached via (tcp/wifi)). Case (wifi 1 ; usb 0) OR (wifi 1 ; usb 1)
+if [[ ${connected} == 1 && ! -z "${socket}" && ${socket} != "null" ]]; then #(device is already attached via (tcp/wifi)). Case (wifi 1 ; usb 0) OR (wifi 1 ; usb 1)
     #WARNING! there is a bug that after being disconnected, still appears in devices list
+
+    echo "connected: ${connected}"
+    echo "socket: ${socket}"
 
     #check if phone rooted
     echo "Checking root.."
@@ -290,7 +324,9 @@ if [[ ${connected} && ! -z "${socket}" && ${socket} != "null" ]]; then #(device 
             adb -s "${socket}" shell su --command "getprop persist.adb.tcp.port" && #set adbd persistent(boot) tcp port
             echo ""
         #echo "Goodbye!"
-        echo "${socket}" >${last_known_socket}
+
+        set_last_working_device_info
+
         mirror
 
         sleep 3                #wait for scrcpy to start mirroring
@@ -316,6 +352,8 @@ if [[ ${connected} && ! -z "${socket}" && ${socket} != "null" ]]; then #(device 
     fi
 
 else #cases: (wifi 0 ; usb 0) OR (wifi 0 ; USB 1)
+    echo ""
+    echo "Wi-Fi seems to be turned off or ADB debugging not enabled on device."
     echo "FALLING TO USB MODE.."
     usb_connection
     echo "socket: ${socket}"
