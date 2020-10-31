@@ -2,10 +2,9 @@
 
 #TODO
 #first retry last known wifi connection (in case wifi is already turned on) - this implies saving it in a local temp file
-    ##adb connect <last_known_ip>:5555
-    #adb -s <last_known_ip>:5555 shell
+##adb connect <last_known_ip>:5555
+#adb -s <last_known_ip>:5555 shell
 #if wifi turned off initially,first suggest turning on wifi instead of waiting for usb cable
-
 
 #this script automatically sets permanent adb via wifi and eventually start srccpy
 
@@ -183,15 +182,11 @@ function mirror() {
 
 }
 
-
-
 ######################################################################################################################
-
 
 #MAIN
 
-
-DIRECTORY=$(cd `dirname $0` && pwd)
+DIRECTORY=$(cd $(dirname $0) && pwd)
 echo "Running script from $DIRECTORY"
 
 #CASES
@@ -219,7 +214,7 @@ fi
 echo "socket: ${socket}"
 
 echo "Trying adb connection.."
-adb disconnect > /dev/null #upon reboot, sometimes even if connected, shell will give "error: closed" on first attempt, but on second will work. Need to disconnect and reconnect to make sure the connection is ok
+adb disconnect >/dev/null #upon reboot, sometimes even if connected, shell will give "error: closed" on first attempt, but on second will work. Need to disconnect and reconnect to make sure the connection is ok
 #adb kill-server
 status=$(adb connect ${socket})
 #adb returns exit code 0 even if cannot connect. not reliable...
@@ -244,11 +239,11 @@ if [[ ${connected} && ! -z "${socket}" && ${socket} != "null" ]]; then #(device 
 
     #check if phone rooted
     echo "Checking root.."
-    adb shell su --command "id -u" #try to get attached device wlan0 ip
+    adb -s "${socket}" shell su --command "id -u" #try to get attached device wlan0 ip
     if [[ $? != 0 ]]; then
         echo "Your phone needs to be rooted to permanently set WiFi adb connectivity"
         exit 1
-        else
+    else
         echo "Device is rooted. Moving on.."
     fi
 
