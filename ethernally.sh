@@ -66,9 +66,7 @@ function get_wifi_connection() {
     check_usb_connection
     usb_device_serial=$(get_device_serial)
 
-
     adb -s "${usb_device_serial}" shell "svc wifi enable"
-
 
     while [[ -z "${wlan0_IP}" ]]; do
 
@@ -261,6 +259,20 @@ function mirror() {
 
 }
 
+function ethernally() {
+
+    set_last_working_device_info
+    #echo "socket: ${socket}"
+    print_connections
+    mirror
+    success_message
+    sleep 3                #wait for scrcpy to start mirroring
+    adb -s ${socket} shell #uncomment to get you straight into android shell (you can comment this line)
+    #from here you can 'su -' to drop to root shell
+    #exit 0
+
+}
+
 ######################################################################################################################
 
 #MAIN
@@ -379,14 +391,7 @@ if [[ ${connected} == 1 && ! -z "${socket}" && ${socket} != "null" ]]; then #(de
         echo "Device not rooted. Will skip setting permanent props to allow WiFi connectivity through ADB unnatended"
         echo ""
 
-        set_last_working_device_info
-        print_connections
-        mirror
-        success_message
-        sleep 3                #wait for scrcpy to start mirroring
-        adb -s ${socket} shell #uncomment to get you straight into android shell (you can comment this line)
-        #from here you can 'su -' to drop to root shell
-        #exit 0
+        ethernally
 
     else
         #device rooted
@@ -402,27 +407,13 @@ if [[ ${connected} == 1 && ! -z "${socket}" && ${socket} != "null" ]]; then #(de
                 adb -s "${socket}" shell su --command "getprop persist.adb.tcp.port" && #set adbd persistent(boot) tcp port
                 echo ""
 
-            set_last_working_device_info
-            print_connections
-            mirror
-            success_message
-            sleep 3                #wait for scrcpy to start mirroring
-            adb -s ${socket} shell #uncomment to get you straight into android shell (you can comment this line)
-            #from here you can 'su -' to drop to root shell
-            #exit 0
+            ethernally
 
         else #wifi shell command failed for some reason.
             echo "WiFi shell command failed."
             #skip to USB
             usb_connection
-            #echo "socket: ${socket}"
-            print_connections
-            mirror
-            success_message
-            sleep 3                #wait for scrcpy to start mirroring
-            adb -s ${socket} shell #uncomment to get you straight into android shell (you can comment this line)
-            #from here you can 'su -' to drop to root shell
-            #exit 0
+            ethernally
         fi
 
     fi
@@ -432,12 +423,5 @@ else #cases: (wifi 0 ; usb 0) OR (wifi 0 ; USB 1)
     echo "Wi-Fi seems to be turned off or ADB debugging not enabled on device."
     echo "Could not connect via WiFi, switching to USB mode"
     usb_connection
-    #echo "socket: ${socket}"
-    print_connections
-    mirror
-    success_message
-    sleep 3                #wait for scrcpy to start mirroring
-    adb -s ${socket} shell #uncomment to get you straight into android shell (you can comment this line)
-    #from here you can 'su -' to drop to root shell
-    #exit 0
+    ethernally
 fi
