@@ -6,14 +6,14 @@
 
 <details>
   <summary>Features</summary>
-  
-* Automatically adds wifi adb connection capability at boot
+ 
+* Mirrors your screen wirelessly with scrcpy
+* Automatically adds wifi adb connection capability at boot [root only]
 * Connects through adb via WiFi
 * Remembers last known working WiFi IP for fast connection
-* Mirrors your screen wirelessly with scrcpy
 * Drops you to a wireless shell on the device
 * Works in Linux and in Windows via cygwin or WSL (Windows Subsystem for Linux)
-* Tackles all scenarios that could get you into issues. It even finds a way when wifi is turned off
+* Tackles all scenarios that could get you into issues. It even finds a way when wifi is turned off!
 </details>
 
 
