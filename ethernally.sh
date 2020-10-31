@@ -136,7 +136,7 @@ function usb_connection() {
     if [[ ${rooted} == 0 ]]; then
         echo "Device is not rooted. Moving on.."
         adb tcpip 5555
-        sleep 3
+        sleep 3 #give adb some time to restart
     else
 
         #device rooted
