@@ -8,6 +8,7 @@
   <summary>Features</summary>
  
 * Mirrors your screen wirelessly with scrcpy
+* New! Support for non-rooted devices
 * Automatically adds Wi-Fi adb connection capability at boot [root only]
 * Connects through adb via Wi-Fi
 * Remembers last known working Wi-Fi IP for fast connection
