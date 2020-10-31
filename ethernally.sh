@@ -183,7 +183,16 @@ function mirror() {
 
 }
 
+
+
+######################################################################################################################
+
+
 #MAIN
+
+
+DIRECTORY=$(cd `dirname $0` && pwd)
+echo "Running script from $DIRECTORY"
 
 #CASES
 #usb	wifi
@@ -192,6 +201,7 @@ function mirror() {
 #0	    1
 #1	    1
 
+#check adb presence on host
 type adb >/dev/null
 if [[ $? != 0 ]]; then
     echo "Please install adb or add it to system PATH if downloaded as standalone binary"
@@ -199,9 +209,11 @@ if [[ $? != 0 ]]; then
 fi
 
 #try wifi connection first
+echo "Trying Wi-Fi connection first.."
 socket=$(adb devices -l | grep ${port} | awk '{print $1}') #try to get attached device wlan0 ip
 
 if [[ -z ${socket} ]]; then
+    echo "No WiFi devices detected"
     socket="null" #set to null so that adb connect fails
 fi
 echo "socket: ${socket}"
@@ -213,20 +225,32 @@ status=$(adb connect ${socket})
 #adb returns exit code 0 even if cannot connect. not reliable...
 
 if [[ ${status} == *cannot* ]]; then
+    echo "Could not connect via adb to any WiFi device"
     connected="0"
 else
+    echo "Connected via adb to any WiFi device"
     connected="1"
 fi
 
 #0 if failed ; 1 if connected
-#echo "connected: ${connected}"
+echo "connected: ${connected}"
 
 #EXAMPLE ERRORS:
 #cannot connect to <wlan0_IP>:5555: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (10060)
 #cannot resolve host 'null' and port 5555: No such host is known. (11001)
 
-if [[ ${connected} && ! -z "${socket}" ]]; then #(device is already attached via (tcp/wifi)). Case (wifi 1 ; usb 0) OR (wifi 1 ; usb 1)
+if [[ ${connected} && ! -z "${socket}" && ${socket} != "null" ]]; then #(device is already attached via (tcp/wifi)). Case (wifi 1 ; usb 0) OR (wifi 1 ; usb 1)
     #WARNING! there is a bug that after being disconnected, still appears in devices list
+
+    #check if phone rooted
+    echo "Checking root.."
+    adb shell su --command "id -u" #try to get attached device wlan0 ip
+    if [[ $? != 0 ]]; then
+        echo "Your phone needs to be rooted to permanently set WiFi adb connectivity"
+        exit 1
+        else
+        echo "Device is rooted. Moving on.."
+    fi
 
     adb -s "${socket}" shell su --command "adbd --version" >/dev/null #try to get adb daemon version on android through wifi only . return "error: closed" in case it cannot run the command
     exitCode="$?"
@@ -248,7 +272,8 @@ if [[ ${connected} && ! -z "${socket}" ]]; then #(device is already attached via
 
         #exit 0
 
-    else #wifi shell command failed for some reason. cases: (wifi 0 ; usb 0) OR (wifi 0 ; USB 1)
+    else #wifi shell command failed for some reason.
+        echo "WiFi shell command failed."
         #skip to USB
         usb_connection
         echo "socket: ${socket}"
@@ -263,7 +288,8 @@ if [[ ${connected} && ! -z "${socket}" ]]; then #(device is already attached via
         #exit 0
     fi
 
-else #it never shouldn't theoretically get there
+else #cases: (wifi 0 ; usb 0) OR (wifi 0 ; USB 1)
+    echo "FALLING TO USB MODE.."
     usb_connection
     echo "socket: ${socket}"
     #sleep 1
