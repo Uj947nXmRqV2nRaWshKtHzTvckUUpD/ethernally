@@ -66,9 +66,9 @@ function get_wifi_connection() {
     check_usb_connection
     usb_device_serial=$(get_device_serial)
 
-    #echo "Trying to start WiFi"
+    echo "Attempting to start WiFi"
     adb -s "${usb_device_serial}" shell "svc wifi enable"
-    #echo "WiFi should be turned on now"
+    echo "WiFi should be turned on now"
 
     while [[ -z "${wlan0_IP}" ]]; do
 
