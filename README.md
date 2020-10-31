@@ -8,7 +8,8 @@
   <summary>Features</summary>
   
 * Automatically adds wifi adb connection capability at boot
-* Connects through adb via wifi
+* Connects through adb via WiFi
+* Remembers last known working WiFi IP for fast connection
 * Mirrors your screen wirelessly with scrcpy
 * Drops you to a wireless shell on the device
 * Works in linux/cygwin
