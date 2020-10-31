@@ -66,9 +66,9 @@ function get_wifi_connection() {
     check_usb_connection
     usb_device_serial=$(get_device_serial)
 
-    echo "Attempting to start WiFi"
+
     adb -s "${usb_device_serial}" shell "svc wifi enable"
-    echo "WiFi should be turned on now"
+
 
     while [[ -z "${wlan0_IP}" ]]; do
 
@@ -136,7 +136,7 @@ function usb_connection() {
     if [[ ${rooted} == 0 ]]; then
         echo "Device is not rooted. Moving on.."
         adb tcpip 5555
-
+        sleep 3
     else
 
         #device rooted
@@ -178,6 +178,7 @@ function usb_connection() {
 
     # done
 
+    echo "Attempting to start Wi-Fi on the device.."
     wlan0_IP=$(get_wifi_connection)
     #echo "wlan0_IP: ${wlan0_IP}"
     socket="${wlan0_IP}:${port}"
