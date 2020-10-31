@@ -40,6 +40,22 @@ function check_usb_connection() {
 
 }
 
+function check_root(){
+
+    echo "Checking root.."
+    elevated_UID=$(adb -s "${socket}" shell su --command "id -u" | sed 's/\r$//g') #try to get attached device wlan0 ip
+    #echo "elevated_UID: ${elevated_UID}"
+
+    if [[ ${elevated_UID} != "0" ]]; then
+        echo "Your phone needs to be rooted for allowing permanent WiFi connectivity through ADB"
+        exit 1
+    else
+        echo "Device is rooted. Moving on.."
+        echo ""
+    fi
+
+}
+
 function get_wifi_connection() {
 
     check_usb_connection
@@ -302,17 +318,7 @@ if [[ ${connected} == 1 && ! -z "${socket}" && ${socket} != "null" ]]; then #(de
     #echo "socket: ${socket}"
 
     #check if phone rooted
-    echo "Checking root.."
-    elevated_UID=$(adb -s "${socket}" shell su --command "id -u" | sed 's/\r$//g') #try to get attached device wlan0 ip
-    #echo "elevated_UID: ${elevated_UID}"
-
-    if [[ ${elevated_UID} != "0" ]]; then
-        echo "Your phone needs to be rooted for allowing permanent WiFi connectivity through ADB"
-        exit 1
-    else
-        echo "Device is rooted. Moving on.."
-        echo ""
-    fi
+    check_root
 
     adb -s "${socket}" shell su --command "adbd --version" >/dev/null #try to get adb daemon version on android through wifi only . return "error: closed" in case it cannot run the command
     exitCode="$?"
