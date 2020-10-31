@@ -1,6 +1,6 @@
 # ethernally
 
-### Your [rooted] Android companion for wireless screen mirroring
+### Your Android companion for wireless screen mirroring
 
 ![alt text](https://i.imgur.com/0DEj5A8.png)
 
