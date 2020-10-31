@@ -21,7 +21,7 @@
 
 * scrpy installed or set to system PATH (clone from: https://github.com/Genymobile/scrcpy)
 * requires the android to be rooted (you can use magisk). This is required to permanently set Android props to allow WiFi adb connections at all times
-* It might ask to plug USB cable (device-PC) for resolving potential connectivity issues in USB debugging
+* It might ask to plug USB cable (device-PC) for resolving potential connectivity issues in USB debugging mode
 </details>
 
 <details>
