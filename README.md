@@ -53,7 +53,7 @@ C:\cygwin\bin\mintty.exe /usr/bin/bash --login "/cygdrive/c/GitHub/ethernally/et
 ```
 git pull
 ```
-* Alternatively you could just copy/paste the code into your script or download it again (eg. with wget)
+* Alternatively you could just copy/paste the code into your script or download it again (eg. with `wget`)
   </details>
 
 ### Feel free to contribute
