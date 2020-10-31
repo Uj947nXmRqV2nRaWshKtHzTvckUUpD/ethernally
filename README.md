@@ -37,9 +37,9 @@ chmod +x ethernally.sh #make the script executable
 ```
 ./ethernally.sh
 ```
-* You could also add it to system path (linux) or to the environment variables (cygwin), and call it from anywhere.
-* Alternatively, you could create a symlink in your preferred location (eg. Desktop).
-* You could even add a shortcut on windows to launch screen mirroring upon execution. To do that, set shortcut's target similar to this:
+* You could also add it to system path (linux) or to the environment variables (cygwin), and call it from anywhere (eg. `ethernally`)
+* Alternatively, you could create a symlink in your preferred location (eg. on your Linux Desktop)
+* You could even add a shortcut on Windows (cygwin) to launch screen mirroring upon execution. To do that, set shortcut's target similar to this:
 ```
 C:\cygwin\bin\mintty.exe /usr/bin/bash --login "/cygdrive/c/GitHub/ethernally/ethernally.sh"
 ```
