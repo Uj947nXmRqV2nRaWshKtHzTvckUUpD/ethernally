@@ -46,5 +46,5 @@ C:\cygwin\bin\mintty.exe /usr/bin/bash --login "/cygdrive/c/GitHub/ethernally/et
   </details>
 
 
-### Feel free to Contribute
+### Feel free to contribute
 
