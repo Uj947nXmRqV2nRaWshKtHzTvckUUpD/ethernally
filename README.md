@@ -27,12 +27,13 @@
 
 <details>
   <summary>How To Run</summary> 
-  
+
+* Prerequisites:
 ```
 dos2unix ethernally.sh #might be needed to convert line endings to unix format
 chmod +x ethernally.sh #make the script executable
 ```
-Simply run the script from its folder (`cd ethernally`) and follow the intuitive wizzard guide:
+* Simply run the script from its folder (`cd ethernally`) and follow the intuitive wizzard guide:
 ```
 ./ethernally.sh
 ```
