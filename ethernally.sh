@@ -5,6 +5,24 @@
 #set the default adbd listening port
 port="5555"
 
+######################################################################################################################
+clear
+
+#check adb presence on host
+type adb >/dev/null
+if [[ $? != 0 ]]; then
+    echo "Please install adb or add it to system PATH if downloaded as standalone binary"
+    exit 1
+fi
+
+DIRECTORY=$(cd $(dirname "$(readlink -f "$0")") && pwd)
+#echo "Running script from $DIRECTORY"
+
+last_working_device="$DIRECTORY/last_working_device.conf"
+touch "${last_working_device}"
+
+######################################################################################################################
+
 #FUNCTIONS (order matters!)
 
 function get_device_serial() {
@@ -273,52 +291,7 @@ function ethernally() {
 
 }
 
-######################################################################################################################
-
-#MAIN
-
-clear
-
-DIRECTORY=$(cd $(dirname "$(readlink -f "$0")") && pwd)
-#echo "Running script from $DIRECTORY"
-
-last_working_device="$DIRECTORY/last_working_device.conf"
-touch "${last_working_device}"
-
-#CASES
-#usb	wifi
-#0      0
-#1	    0
-#0	    1
-#1	    1
-
-#check adb presence on host
-type adb >/dev/null
-if [[ $? != 0 ]]; then
-    echo "Please install adb or add it to system PATH if downloaded as standalone binary"
-    exit 1
-fi
-
-#try wifi connection first
-echo "Attempting Wi-Fi connection first.."
-socket=$(adb devices -l | grep ${port} | awk '{print $1}') #try to get attached device wlan0 ip
-
-if [[ -z ${socket} ]]; then
-    echo "No WiFi devices detected"
-    socket="null" #set to null so that adb connect fails
-fi
-echo "socket: ${socket}"
-echo ""
-
-echo "Trying connection wirelessy via ADB. Please wait..."
-adb disconnect >/dev/null #upon reboot, sometimes even if connected, shell will give "error: closed" on first attempt, but on second will work. Need to disconnect and reconnect to make sure the connection is ok
-#adb kill-server
-status=$(adb connect ${socket})
-#adb returns exit code 0 even if it cannot connect. not reliable...
-
-if [[ ${status} == *cannot* ]]; then
-    echo "Could not connect via ADB to any detected WiFi device"
-    connected="0"
+function try_last_known_device() {
 
     echo ""
     echo "Trying last known working device.."
@@ -351,7 +324,7 @@ if [[ ${status} == *cannot* ]]; then
             fi
 
         else
-            echo "Skipping verifying connection with last known working device as it is the same as the one reported as ADB attached device.."
+            echo "Skipping verifying connection with last known working device as it is the same as the one reported by ADB attached device which cannot connect.."
 
         fi
 
@@ -360,25 +333,76 @@ if [[ ${status} == *cannot* ]]; then
 
     fi
 
+}
+
+######################################################################################################################
+
+#MAIN
+
+#CASES
+#usb	wifi
+#0      0
+#1	    0
+#0	    1
+#1	    1
+
+#try wifi connection first
+echo "Attempting to discover any attached devices.."
+adb devices -l
+echo ""
+socket=$(adb devices -l | grep ${port} | awk '{print $1}') #try to get attached device wlan0 ip, even if offline
+
+if [[ -z ${socket} ]]; then
+    echo "There are no WiFi devices automatically detected/attached - as reported by adb."
+    socket="null" #set to null so that adb connect fails
+    connected="0"
+
+    echo "Disconnecting adb.."
+    adb disconnect >/dev/null #upon reboot, sometimes even if connected, shell will give "error: closed" on first attempt, but on second will work. Need to disconnect and reconnect to make sure the connection is ok
+    #adb kill-server #not really needed
+
+    try_last_known_device
+
 else
-    echo "Connected via adb to WiFi device"
-    echo ""
-    connected="1"
+    #socket not null
+
+    echo "Disconnecting adb.."
+    adb disconnect >/dev/null #upon reboot, sometimes even if connected, shell will give "error: closed" on first attempt, but on second will work. Need to disconnect and reconnect to make sure the connection is ok
+    #adb kill-server #not really needed
+
+    echo "Attempting Wi-Fi connection via ADB first. Please wait..."
+    status=$(adb connect ${socket})
+    #adb returns exit code 0 even if it cannot connect. not reliable...
+
+    if [[ ${status} == *cannot* ]]; then
+
+        #EXAMPLE ERRORS:
+        #cannot connect to <wlan0_IP>:5555: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (10060)
+        #cannot resolve host 'null' and port 5555: No such host is known. (11001)
+
+        echo "Could not connect via ADB to any automatically detected WiFi device"
+        connected="0"
+
+        try_last_known_device
+
+    else
+        echo "Connected via ADB to WiFi device"
+        echo ""
+        connected="1"
+    fi
+
 fi
 
-#0 if failed ; 1 if connected
-#echo "connected: ${connected}"
-#echo "socket: ${socket}"
+echo ""
+echo "socket: ${socket}"
+echo "connected: ${connected}"
+echo ""
 
-#EXAMPLE ERRORS:
-#cannot connect to <wlan0_IP>:5555: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (10060)
-#cannot resolve host 'null' and port 5555: No such host is known. (11001)
+if [[ ${connected} == 1 && ! -z "${socket}" && ${socket} != "null" ]]; then 
 
-if [[ ${connected} == 1 && ! -z "${socket}" && ${socket} != "null" ]]; then #(device is already attached via (tcp/wifi)). Case (wifi 1 ; usb 0) OR (wifi 1 ; usb 1)
+    #(device is already attached via (tcp/wifi)). Case (wifi 1 ; usb 0) OR (wifi 1 ; usb 1)
+    
     #WARNING! there is a bug that after being disconnected, still appears in devices list
-
-    #echo "connected: ${connected}"
-    #echo "socket: ${socket}"
 
     device=${socket}
 
