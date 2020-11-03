@@ -23,7 +23,7 @@
 
 * scrpy must be installed or set to system PATH (clone from: https://github.com/Genymobile/scrcpy)
 * To permanently set Android props to allow Wi-Fi adb connections at all times, it is required to have the device rooted (you can use magisk).
-* You might need an USB cable for resolving potential connectivity issues in USB debugging mode. If the tool asks for it, just plug it between your device and your PC
+* You might need an USB cable for resolving potential connectivity issues in USB debugging mode. If the tool asks for it, just plug it between your device and your PC while having USB debugging enabled. (To unlock the hidden Developer tools/options menu, go to Android Settings > About > Press on 'build number' 7 times. Then go to android settings > developer tools/options and enable USB debugging)
 </details>
 
 <details>
