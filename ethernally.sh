@@ -37,12 +37,21 @@ function get_device_serial() {
 
 function check_usb_connection() {
 
+    adb kill-server
+
     while [[ -z "${usb_device_serial}" ]]; do
+        
+        adb usb 2>/dev/null
+
+        sleep 2 #wait to be ready
 
         usb_device_serial=$(get_device_serial)
-        #echo "usb_device_serial: ${usb_device_serial}"
 
+        #echo "usb_device_serial: ${usb_device_serial}"
+        
         usb_device=$(adb devices -l | grep -w device | grep -v '\.' | awk -F: '{print $4}' | awk '{print $1}') #get device name
+
+        #echo "usb_device: ${usb_device}"
 
         if [[ ! -z "${usb_device_serial}" ]]; then
             echo ""
@@ -53,10 +62,8 @@ function check_usb_connection() {
 
         echo -n "."
 
-        sleep 1 #wait to be ready
-
     done
-
+    echo "usb_device_serial: ${usb_device_serial}"
 }
 
 function check_root() {
@@ -79,9 +86,8 @@ function check_root() {
 
 }
 
-function get_wifi_connection() {
+function start_wifi_connection() {
 
-    check_usb_connection
     usb_device_serial=$(get_device_serial)
 
     adb -s "${usb_device_serial}" shell "svc wifi enable"
@@ -92,10 +98,9 @@ function get_wifi_connection() {
             grep inet |
             awk '{print $2}' |
             awk -F [\/] '{print $1}')
-        #get wlan0 ip
 
         if [[ ! -z "${wlan0_IP}" ]]; then
-            echo "${wlan0_IP}" #print wlan0 ip
+            echo "${wlan0_IP}"
             break
         fi
 
@@ -152,7 +157,7 @@ function usb_connection() {
     if [[ ${rooted} == 0 ]]; then
         echo "Device is not rooted. Moving on.."
         adb tcpip 5555
-        sleep 3 #give adb some time to restart
+        sleep 5 #give adb some time to restart. do now lower this timeout!
     else
 
         #device rooted
@@ -195,7 +200,7 @@ function usb_connection() {
     # done
 
     echo "Attempting to start Wi-Fi on the device.."
-    wlan0_IP=$(get_wifi_connection)
+    wlan0_IP=$(start_wifi_connection)
     #echo "wlan0_IP: ${wlan0_IP}"
     socket="${wlan0_IP}:${port}"
     echo "new socket: ${socket}"
@@ -316,6 +321,7 @@ function try_last_known_device() {
                 echo "Could not connect via ADB to last known WiFi device"
                 echo ""
                 connected="0"
+                >${last_working_device} #remove last known working device
             else
                 echo "Connected via ADB to last known WiFi device:"
                 cat "${last_working_device}"
