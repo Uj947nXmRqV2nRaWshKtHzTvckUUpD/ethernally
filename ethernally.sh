@@ -275,8 +275,34 @@ function print_connections() {
 
 function mirror() {
 
-    scrcpy -s "${socket}" --stay-awake --turn-screen-off -m 2160 --render-driver=opengl --max-fps 60 --bit-rate 6M &
-    >/dev/null #mirror android screen via wifi, assuming that scrcpy is already installed or added to PATH ; modify custom options as desired
+    stayAwake="--stay-awake"
+    turnScreenOff="--turn-screen-off"
+    maxSize="--max-size" #Max resollution Full HD, 2K, 4K..
+    maxSizeValue="2160"
+    #renderDriver="--render-driver=direct3d" #direct3d, opengl (slower, prone to crash with segmentation fault on Windows) ; comment to automatically detect best driver
+    maxFps="--max-fps"
+    maxFpsValue="60"
+    bitRate="--bit-rate"
+    bitRateValue="6M"
+
+    options=("${stayAwake}" "${turnScreenOff}" "${renderDriver}" "${maxSize}" "${maxSizeValue}" "${maxFps}" "${maxFpsValue}" "${bitRate}" "${bitRateValue}")
+    #echo "scrcpy options: ${options[*]}"
+    index=0
+    for item in "${options[@]}"; do
+        #echo "item: ${item}"
+        #echo "index: ${index}"
+        if [[ -z "${item}" ]]; then
+            #echo "empty index: ${index}"
+            unset options[${index}]
+        fi
+        ((index++))
+    done
+    echo "Running scrcpy with options: ${options[*]}"
+
+    scrcpy -s "${socket}" "${options[@]}" &
+
+    #>/dev/null
+    #mirror android screen via wifi, assuming that scrcpy is already installed or added to PATH ; modify custom options as desired
 
     #scrcpy-noconsole -s "${socket}" --stay-awake --turn-screen-off -m 2160 --render-driver=opengl --max-fps 60 --bit-rate 6M & > /dev/null #mirror android screen via wifi, assuming that scrcpy is already installed or added to PATH ; modify custom options as desired ; this is for cygwin
 
