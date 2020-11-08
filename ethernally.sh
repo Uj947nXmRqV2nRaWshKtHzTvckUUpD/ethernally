@@ -15,7 +15,12 @@ if [[ $? != 0 ]]; then
     exit 1
 fi
 
-DIRECTORY=$(cd $(dirname "$(readlink -f "$0")") && pwd)
+#perl adaptation of readlink -f for compatibility with MacOS
+function readlinkf() { 
+    perl -MCwd -le 'print Cwd::abs_path shift' "$1"
+    }
+
+DIRECTORY=$(cd $(dirname "$(readlinkf "$0")") && pwd)
 #echo "Running script from $DIRECTORY"
 
 last_working_device="$DIRECTORY/last_working_device.conf"
@@ -24,6 +29,7 @@ touch "${last_working_device}"
 ######################################################################################################################
 
 #FUNCTIONS (order matters!)
+
 
 function get_device_serial() {
 
@@ -40,7 +46,7 @@ function check_usb_connection() {
     adb kill-server
 
     while [[ -z "${usb_device_serial}" ]]; do
-        
+
         adb usb 2>/dev/null
 
         sleep 2 #wait to be ready
@@ -48,7 +54,7 @@ function check_usb_connection() {
         usb_device_serial=$(get_device_serial)
 
         #echo "usb_device_serial: ${usb_device_serial}"
-        
+
         usb_device=$(adb devices -l | grep -w device | grep -v '\.' | awk -F: '{print $4}' | awk '{print $1}') #get device name
 
         #echo "usb_device: ${usb_device}"
@@ -430,10 +436,10 @@ echo "socket: ${socket}"
 echo "connected: ${connected}"
 echo ""
 
-if [[ ${connected} == 1 && ! -z "${socket}" && ${socket} != "null" ]]; then 
+if [[ ${connected} == 1 && ! -z "${socket}" && ${socket} != "null" ]]; then
 
     #(device is already attached via (tcp/wifi)). Case (wifi 1 ; usb 0) OR (wifi 1 ; usb 1)
-    
+
     #WARNING! there is a bug that after being disconnected, still appears in devices list
 
     device=${socket}
