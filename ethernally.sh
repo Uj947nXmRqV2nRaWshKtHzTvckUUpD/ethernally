@@ -390,25 +390,21 @@ adb devices -l
 echo ""
 socket=$(adb devices -l | grep ${port} | awk '{print $1}') #try to get attached device wlan0 ip, even if offline
 
+echo "Disconnecting adb and killing adb server.."
+adb disconnect >/dev/null #upon reboot, sometimes even if connected, shell will give "error: closed" on first attempt, but on second will work. Need to disconnect and reconnect to make sure the connection is ok
+adb kill-server #is it really needed?
+
 if [[ -z ${socket} ]]; then
-    echo "There are no WiFi devices automatically detected/attached - as reported by adb."
+    echo "There are no WiFi devices automatically detected/attached - as reported by ADB."
     socket="null" #set to null so that adb connect fails
     connected="0"
-
-    echo "Disconnecting adb.."
-    adb disconnect >/dev/null #upon reboot, sometimes even if connected, shell will give "error: closed" on first attempt, but on second will work. Need to disconnect and reconnect to make sure the connection is ok
-    #adb kill-server #not really needed
 
     try_last_known_device
 
 else
     #socket not null
 
-    echo "Disconnecting adb.."
-    adb disconnect >/dev/null #upon reboot, sometimes even if connected, shell will give "error: closed" on first attempt, but on second will work. Need to disconnect and reconnect to make sure the connection is ok
-    #adb kill-server #not really needed
-
-    echo "Attempting Wi-Fi connection via ADB first. Please wait..."
+    echo "Attempting ADB connection via Wi-Fi first. Please wait..."
     status=$(adb connect ${socket})
     #adb returns exit code 0 even if it cannot connect. not reliable...
 
