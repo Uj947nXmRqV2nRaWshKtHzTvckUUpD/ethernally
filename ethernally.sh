@@ -10,7 +10,7 @@ clear
 
 #check adb presence on host
 type adb >/dev/null
-if [[ $? != 0 ]]; then
+if [ $? -ne 0 ]; then
     echo "Please install adb or add it to system PATH if downloaded as standalone binary"
     exit 1
 fi
