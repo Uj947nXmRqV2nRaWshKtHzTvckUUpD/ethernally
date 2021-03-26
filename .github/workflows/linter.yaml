@@ -53,7 +53,7 @@ jobs:
           DEFAULT_BRANCH: main
           VALIDATE_ALL_CODEBASE: false
           # only new/changed files linted
-          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 #       # Runs a single command using the runners shell
 #       - name: Run a one-line script
