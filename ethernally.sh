@@ -9,8 +9,7 @@ port="5555"
 clear
 
 #check adb presence on host
-type adb >/dev/null
-if [ $? -ne 0 ]; then
+if ! type adb >/dev/null; then
     echo "Please install adb or add it to system PATH if downloaded as standalone binary"
     exit 1
 fi
@@ -20,8 +19,8 @@ readlinkf() {
     perl -MCwd -le 'print Cwd::abs_path shift' "$1"
 }
 
-DIRECTORY=$(cd $(dirname "$(readlinkf "$0")") && pwd)
-#echo "Running script from $DIRECTORY"
+DIRECTORY=$(cd "$(dirname "$(readlinkf "$0")")" && pwd)
+echo "Running script from $DIRECTORY"
 
 last_working_device="$DIRECTORY/last_working_device.conf"
 touch "${last_working_device}"
@@ -44,7 +43,7 @@ check_usb_connection() {
 
     adb kill-server
 
-    while [[ -z "${usb_device_serial}" ]]; do
+    while [ -z "${usb_device_serial}" ]; do
 
         adb usb 2>/dev/null
 
@@ -58,14 +57,14 @@ check_usb_connection() {
 
         #echo "usb_device: ${usb_device}"
 
-        if [[ ! -z "${usb_device_serial}" ]]; then
+        if [ -n "${usb_device_serial}" ]; then
             echo ""
             echo "device(s) connected via USB cable: ${usb_device}" #print USB conneted device serial
             break
 
         fi
 
-        echo -n "."
+        printf "."
 
     done
     echo "usb_device_serial: ${usb_device_serial}"
@@ -79,7 +78,7 @@ check_root() {
     #sed is required to fix line ending by removing dos carriage return (cygwin)
     #echo "elevated_UID: ${elevated_UID}"
 
-    if [[ ${elevated_UID} != "0" ]]; then
+    if [ ${elevated_UID} -ne 0 ]; then
         echo "Your device needs to be rooted for allowing permanent WiFi connectivity through ADB"
         rooted=0
         #echo "rooted: ${rooted}"
@@ -97,14 +96,14 @@ start_wifi_connection() {
 
     adb -s "${usb_device_serial}" shell "svc wifi enable"
 
-    while [[ -z "${wlan0_IP}" ]]; do
+    while [ -z "${wlan0_IP}" ]; do
 
         wlan0_IP=$(adb -s "${usb_device_serial}" shell ip -f inet addr show wlan0 2>/dev/null |
             grep inet |
             awk '{print $2}' |
-            awk -F [\/] '{print $1}')
+            awk -F / '{print $1}')
 
-        if [[ ! -z "${wlan0_IP}" ]]; then
+        if [ -n "${wlan0_IP}" ]; then
             echo "${wlan0_IP}"
             break
         fi
@@ -115,21 +114,21 @@ start_wifi_connection() {
 
 set_last_working_device_info() {
 
-    echo "${socket}" >${last_working_device}
+    echo "${socket}" >"${last_working_device}"
     manufacturer=$(adb -s "${socket}" shell "getprop ro.product.manufacturer") #Manufacturer
-    echo "Manufacturer: ${manufacturer}" >>${last_working_device}
+    echo "Manufacturer: ${manufacturer}" >>"${last_working_device}"
 
     android_version=$(adb -s "${socket}" shell "getprop ro.build.version.release") #device android version
-    echo "Android Version: ${android_version}" >>${last_working_device}
+    echo "Android Version: ${android_version}" >>"${last_working_device}"
 
     sdk_version=$(adb -s "${socket}" shell "getprop ro.build.version.sdk") #sdk version
-    echo "SDK Version: ${sdk_version}" >>${last_working_device}
+    echo "SDK Version: ${sdk_version}" >>"${last_working_device}"
 
     product_name=$(adb -s "${socket}" shell "getprop ro.product.name") #product name
-    echo "Product Name: ${product_name}" >>${last_working_device}
+    echo "Product Name: ${product_name}" >>"${last_working_device}"
 
     model=$(adb -s "${socket}" shell "getprop ro.product.model") #device model
-    echo "Model: ${model}" >>${last_working_device}
+    echo "Model: ${model}" >>"${last_working_device}"
 
 }
 
@@ -156,10 +155,10 @@ usb_connection() {
     device=${usb_device_serial}
 
     #check if device is rooted
-    check_root ${device}
+    check_root "${device}"
 
     #if device is not rooted
-    if [[ ${rooted} == 0 ]]; then
+    if [ ${rooted} -eq 0 ]; then
         echo "Device is not rooted. Moving on.."
         adb tcpip 5555
         sleep 5 #give adb some time to restart. do now lower this timeout!
@@ -169,11 +168,11 @@ usb_connection() {
 
         #Set props
         adb -s "${usb_device_serial}" shell su --command "setprop service.adb.tcp.port ${port}" &&
-            echo -n "Property service.adb.tcp.port was set to:" &&
+            printf "Property service.adb.tcp.port was set to:" &&
             adb -s "${usb_device_serial}" shell su --command "getprop service.adb.tcp.port" #set adbd session tcp port
 
         adb -s "${usb_device_serial}" shell su --command "setprop persist.adb.tcp.port ${port}" &&
-            echo -n "Property persist.adb.tcp.port was set to:" &&
+            printf "Property persist.adb.tcp.port was set to:" &&
             adb -s "${usb_device_serial}" shell su --command "getprop persist.adb.tcp.port" #set adbd persistent(boot) tcp port
 
         echo "Restarting adbd"
@@ -210,10 +209,11 @@ usb_connection() {
     socket="${wlan0_IP}:${port}"
     echo "new socket: ${socket}"
 
-    status=$(adb connect ${socket})
+    status=$(adb connect "${socket}")
     #adb returns exit code 0 even if cannot connect. not reliable...
 
-    if [[ ${status} == *cannot* ]]; then
+    if [ "${status#*cannot}" != "${status}" ]; then
+        # posix trick to determine if status contains word "cannot"
         echo "Could not connect via adb to WiFi device"
         connected="0"
     else #Wi-Fi connectivity worked
@@ -255,19 +255,19 @@ print_connections() {
 
     #echo "ADB TCP Connections:"
 
-    while [[ -z "${connections}" ]]; do
+    while [ -z "${connections}" ]; do
 
         connections=$(adb -s "${socket}" shell "netstat -tupna | grep ${port}" 2>/dev/null) #optionally, show that adbd daemon is listening, and the established connection
 
         exitCode=$?
 
-        if [[ ${exitCode} == 0 ]]; then
+        if [ "${exitCode}" -eq 0 ]; then
             connectionState=1
         else
             connectionState=0
         fi
 
-        if [[ ${connectionState} && ! -z "${connections}" ]]; then
+        if [ ${connectionState} ] && [ -n "${connections}" ]; then
             #echo "${connections}" #print wlan0 ip
             break
         fi
