@@ -30,6 +30,11 @@ jobs:
         uses: github/super-linter@v3
         env:
           FILTER_REGEX_INCLUDE: .*.sh
+          # only sh files linted
+          DEFAULT_BRANCH: master
+          VALIDATE_ALL_CODEBASE: false
+          # only new/changed files linted
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 #       # Runs a single command using the runners shell
 #       - name: Run a one-line script
