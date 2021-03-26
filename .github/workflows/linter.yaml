@@ -28,6 +28,8 @@ jobs:
 #         uses: azohra/shell-linter@latest
       - name: Lint Code Base
         uses: github/super-linter@v3
+        env:
+          FILTER_REGEX_INCLUDE: .*.sh
 
 #       # Runs a single command using the runners shell
 #       - name: Run a one-line script
