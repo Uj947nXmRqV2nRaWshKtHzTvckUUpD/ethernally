@@ -18,7 +18,7 @@ if [[ $? != 0 ]]; then
 fi
 
 #perl adaptation of readlink -f for compatibility with MacOS
-function readlinkf() { 
+readlinkf() { 
     perl -MCwd -le 'print Cwd::abs_path shift' "$1"
     }
 
@@ -33,7 +33,7 @@ touch "${last_working_device}"
 #FUNCTIONS (order matters!)
 
 
-function get_device_serial() {
+get_device_serial() {
 
     adb_devices=$(adb devices -l)
     #echo "adb_devices: ${adb_devices}"
@@ -43,7 +43,7 @@ function get_device_serial() {
 
 }
 
-function check_usb_connection() {
+check_usb_connection() {
 
     adb kill-server
 
@@ -74,7 +74,7 @@ function check_usb_connection() {
     echo "usb_device_serial: ${usb_device_serial}"
 }
 
-function check_root() {
+check_root() {
 
     echo "Checking root.."
     elevated_UID=$(adb -s "${device}" shell su --command "id -u" | sed 's/\r$//g')
@@ -94,7 +94,7 @@ function check_root() {
 
 }
 
-function start_wifi_connection() {
+start_wifi_connection() {
 
     usb_device_serial=$(get_device_serial)
 
@@ -116,7 +116,7 @@ function start_wifi_connection() {
 
 }
 
-function set_last_working_device_info() {
+set_last_working_device_info() {
 
     echo "${socket}" >${last_working_device}
     manufacturer=$(adb -s "${socket}" shell "getprop ro.product.manufacturer") #Manufacturer
@@ -136,7 +136,7 @@ function set_last_working_device_info() {
 
 }
 
-function usb_connection() {
+usb_connection() {
 
     #((device does not have WiFi turned on) OR (does not have an IP set)) OR (device is NOT already attached via (tcp/wifi OR USB))
 
@@ -237,7 +237,7 @@ function usb_connection() {
 
 }
 
-function success_message() {
+success_message() {
 
     echo "######################################"
     echo "You can now unplug the USB cable."
@@ -249,7 +249,7 @@ function success_message() {
 
 }
 
-function print_connections() {
+print_connections() {
 
     #adb devices -l #print attached devices (both USB and wifi/tcp are connected now)
 
@@ -281,7 +281,7 @@ function print_connections() {
 
 }
 
-function mirror() {
+mirror() {
 
     stayAwake="--stay-awake"
     turnScreenOff="--turn-screen-off"
@@ -316,7 +316,7 @@ function mirror() {
 
 }
 
-function ethernally() {
+ethernally() {
 
     set_last_working_device_info
     #echo "socket: ${socket}"
@@ -330,7 +330,7 @@ function ethernally() {
 
 }
 
-function try_last_known_device() {
+try_last_known_device() {
 
     echo ""
     echo "Trying last known working device.."
