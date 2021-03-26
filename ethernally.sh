@@ -319,7 +319,7 @@ mirror() {
             # echo "empty index: ${index}"
             unset options[${index}]
         fi
-        ((index++))
+        index=$((index + 1))
     done
     echo "Running scrcpy with options: ${options[*]}"
 
