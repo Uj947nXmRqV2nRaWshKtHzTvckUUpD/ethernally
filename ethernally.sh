@@ -369,11 +369,11 @@ try_last_known_device() {
             echo "Last known working socket: ${socket}"
 
             status=$(adb connect "${socket}")
-            if [ ${status#*cannot} != "${status}" ]; then
+            if [ "${status#*cannot}" != "${status}" ]; then
                 echo "Could not connect via ADB to last known WiFi device"
                 echo ""
                 connected="0"
-                >"${last_working_device}"
+                printf "" > "${last_working_device}"
                 # remove last known working device
             else
                 echo "Connected via ADB to last known WiFi device:"
@@ -418,7 +418,7 @@ adb disconnect >/dev/null
 adb kill-server
 # is it really needed?
 
-if [ -z ${socket} ]; then
+if [ -z "${socket}" ]; then
     echo "There are no WiFi devices automatically detected/attached - as reported by ADB."
     socket="null"
     # set to null so that adb connect fails
