@@ -24,8 +24,13 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+        with:
+          # Full git history is needed to get a proper list of changed files within `super-linter`
+          fetch-depth: 0
+          
 #       - name: Run Shellcheck
 #         uses: azohra/shell-linter@latest
+
       - name: Lint Code Base
         uses: github/super-linter@v3
         env:
