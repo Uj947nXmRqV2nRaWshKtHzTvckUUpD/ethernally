@@ -18,9 +18,9 @@ if [[ $? != 0 ]]; then
 fi
 
 #perl adaptation of readlink -f for compatibility with MacOS
-readlinkf() { 
+readlinkf() {
     perl -MCwd -le 'print Cwd::abs_path shift' "$1"
-    }
+}
 
 DIRECTORY=$(cd $(dirname "$(readlinkf "$0")") && pwd)
 #echo "Running script from $DIRECTORY"
@@ -31,7 +31,6 @@ touch "${last_working_device}"
 ######################################################################################################################
 
 #FUNCTIONS (order matters!)
-
 
 get_device_serial() {
 
@@ -394,7 +393,7 @@ socket=$(adb devices -l | grep ${port} | awk '{print $1}') #try to get attached 
 
 echo "Disconnecting adb and killing adb server.."
 adb disconnect >/dev/null #upon reboot, sometimes even if connected, shell will give "error: closed" on first attempt, but on second will work. Need to disconnect and reconnect to make sure the connection is ok
-adb kill-server #is it really needed?
+adb kill-server           #is it really needed?
 
 if [[ -z ${socket} ]]; then
     echo "There are no WiFi devices automatically detected/attached - as reported by ADB."
