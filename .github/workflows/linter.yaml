@@ -31,7 +31,7 @@ jobs:
         env:
           FILTER_REGEX_INCLUDE: .*.sh
           # only sh files linted
-          DEFAULT_BRANCH: master
+          DEFAULT_BRANCH: main
           VALIDATE_ALL_CODEBASE: false
           # only new/changed files linted
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
