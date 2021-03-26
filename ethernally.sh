@@ -197,25 +197,6 @@ usb_connection() {
 
     fi
 
-    # #detect manual wifi start. Not needed anymore
-    # while [[ -z "${wlan0_IP}" ]]; do
-
-    #     wlan0_IP=$(adb shell ip -f inet addr show wlan0 |
-    #         grep inet |
-    #         awk '{print $2}' |
-    #         awk -F [\/] '{print $1}') #get wlan0 ip
-
-    #     if [[ ! -z $wlan0_IP ]]; then
-    #         echo "WiFi wlan0 IP: $wlan0_IP" #print wlan0 ip
-    #         break
-    #     fi
-
-    #     echo "Please turn on WiFi on your device"
-    #     read -p "Press enter when ready."
-
-    #     sleep 3 #wait to be ready
-
-    # done
 
     echo "Attempting to start Wi-Fi on the device.."
     wlan0_IP=$(start_wifi_connection)
@@ -301,11 +282,11 @@ mirror() {
     stayAwake="--stay-awake"
     turnScreenOff="--turn-screen-off"
     maxSize="--max-size"
-    # Max resollution Full HD, 2K, 4K..
-    maxSizeValue="2160"
+    # Max resollution Full HD (1920), 2K (2160), 4K (4096)..
+    maxSizeValue="1920"
     # renderDriver="--render-driver=direct3d" #direct3d, opengl (slower, prone to crash with segmentation fault on Windows) ; comment to automatically detect best driver
     maxFps="--max-fps"
-    maxFpsValue="60"
+    maxFpsValue="45"
     bitRate="--bit-rate"
     bitRateValue="6M"
 
