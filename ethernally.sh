@@ -407,7 +407,7 @@ else
     status=$(adb connect ${socket})
     #adb returns exit code 0 even if it cannot connect. not reliable...
 
-    if [ ${status#*cannot} != ${status} ]; then
+    if [ "${status#*cannot}" != "${status}" ]; then
 
         #EXAMPLE ERRORS:
         #cannot connect to <wlan0_IP>:5555: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (10060)
@@ -443,7 +443,7 @@ if [ ${connected} = 1 ] && [ -n "${socket}" ] && [ ${socket} != "null" ]; then
     check_root ${device}
 
     #if device is not rooted
-    if [ ${rooted} = 0 ]; then
+    if [ "${rooted}" = 0 ]; then
 
         echo "Device not rooted. Will skip setting permanent props to allow WiFi connectivity through ADB unnatended"
         echo ""
