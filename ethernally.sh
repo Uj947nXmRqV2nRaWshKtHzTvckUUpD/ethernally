@@ -2,8 +2,6 @@
 
 #this script automatically sets permanent adb via wifi and eventually start scrcpy through WiFi
 
-#requires perl to be installed
-
 #set the default adbd listening port
 port="5555"
 
