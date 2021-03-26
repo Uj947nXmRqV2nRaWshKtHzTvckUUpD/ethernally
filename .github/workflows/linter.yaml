@@ -43,8 +43,8 @@ jobs:
 #         uses: azohra/shell-linter@latest
 
       - name: create reports folder
-        run: mkdir -p ${GITHUB_WORKSPACE}/github/workspace/
-
+        run: |
+          mkdir -p ${GITHUB_WORKSPACE}/github/workspace/ /github/workspace/
       - name: Lint Code Base
         uses: github/super-linter@v3
         env:
