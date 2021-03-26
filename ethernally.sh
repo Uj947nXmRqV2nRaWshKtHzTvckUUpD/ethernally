@@ -78,7 +78,7 @@ check_root() {
     #sed is required to fix line ending by removing dos carriage return (cygwin)
     #echo "elevated_UID: ${elevated_UID}"
 
-    if [ ${elevated_UID} -ne 0 ]; then
+    if [ "${elevated_UID}" -ne 0 ]; then
         echo "Your device needs to be rooted for allowing permanent WiFi connectivity through ADB"
         rooted=0
         #echo "rooted: ${rooted}"
@@ -296,7 +296,7 @@ mirror() {
     for item in "${options[@]}"; do
         #echo "item: ${item}"
         #echo "index: ${index}"
-        if [[ -z "${item}" ]]; then
+        if [ -z "${item}" ]; then
             #echo "empty index: ${index}"
             unset options[${index}]
         fi
@@ -321,7 +321,7 @@ ethernally() {
     mirror
     success_message
     sleep 3                #wait for scrcpy to start mirroring
-    adb -s ${socket} shell #uncomment to get you straight into android shell (you can comment this line)
+    adb -s "${socket}" shell #uncomment to get you straight into android shell (you can comment this line)
     #from here you can 'su -' to drop to root shell
     #exit 0
 
@@ -332,23 +332,23 @@ try_last_known_device() {
     echo ""
     echo "Trying last known working device.."
 
-    if [[ -s ${last_working_device} ]]; then
+    if [ -s ${last_working_device} ]; then
 
-        last_working_IP=$(cat ${last_working_device} | grep -E -o "((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){1,3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)")
+        last_working_IP=$(grep -E -o "((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){1,3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)" ${last_working_device})
         #echo "Last known working IP: ${last_working_IP}"
 
-        last_Working_port=$(cat ${last_working_device} | grep ${last_working_IP} | awk -F [:] '{print $2}')
+        last_Working_port=$(grep ${last_working_IP} ${last_working_device} | awk -F [:] '{print $2}')
         #echo "Last known working port: ${last_Working_port}"
 
         last_working_socket="${last_working_IP}:${last_Working_port}"
 
-        if [[ ${last_working_socket} != ${socket} ]]; then
+        if [ ${last_working_socket} != ${socket} ]; then
 
             socket="${last_working_socket}"
             echo "Last known working socket: ${socket}"
 
-            status=$(adb connect ${socket})
-            if [[ ${status} == *cannot* ]]; then
+            status=$(adb connect "${socket}")
+            if [[ ${status#*cannot} != ${status} ]]; then
                 echo "Could not connect via ADB to last known WiFi device"
                 echo ""
                 connected="0"
@@ -393,7 +393,7 @@ echo "Disconnecting adb and killing adb server.."
 adb disconnect >/dev/null #upon reboot, sometimes even if connected, shell will give "error: closed" on first attempt, but on second will work. Need to disconnect and reconnect to make sure the connection is ok
 adb kill-server           #is it really needed?
 
-if [[ -z ${socket} ]]; then
+if [ -z ${socket} ]; then
     echo "There are no WiFi devices automatically detected/attached - as reported by ADB."
     socket="null" #set to null so that adb connect fails
     connected="0"
@@ -407,7 +407,7 @@ else
     status=$(adb connect ${socket})
     #adb returns exit code 0 even if it cannot connect. not reliable...
 
-    if [[ ${status} == *cannot* ]]; then
+    if [ ${status#*cannot} != ${status} ]; then
 
         #EXAMPLE ERRORS:
         #cannot connect to <wlan0_IP>:5555: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (10060)
@@ -431,7 +431,7 @@ echo "socket: ${socket}"
 echo "connected: ${connected}"
 echo ""
 
-if [[ ${connected} == 1 && ! -z "${socket}" && ${socket} != "null" ]]; then
+if [ ${connected} = 1 ] && [ -n "${socket}" ] && [ ${socket} != "null" ]; then
 
     #(device is already attached via (tcp/wifi)). Case (wifi 1 ; usb 0) OR (wifi 1 ; usb 1)
 
@@ -443,7 +443,7 @@ if [[ ${connected} == 1 && ! -z "${socket}" && ${socket} != "null" ]]; then
     check_root ${device}
 
     #if device is not rooted
-    if [[ ${rooted} == 0 ]]; then
+    if [ ${rooted} = 0 ]; then
 
         echo "Device not rooted. Will skip setting permanent props to allow WiFi connectivity through ADB unnatended"
         echo ""
@@ -456,11 +456,11 @@ if [[ ${connected} == 1 && ! -z "${socket}" && ${socket} != "null" ]]; then
         adb -s "${socket}" shell su --command "adbd --version" >/dev/null #try to get adb daemon version on android through wifi only . return "error: closed" in case it cannot run the command
         exitCode="$?"
         #echo "exitCode: ${exitCode}"
-        if [[ ${exitCode} == 0 ]]; then #wifi shell command succeded
+        if [ ${exitCode} = 0 ]; then #wifi shell command succeded
             #No need to plug USB cable
             #Set props
             adb -s "${socket}" shell su --command "setprop persist.adb.tcp.port ${port}" &&
-                echo -n "Property persist.adb.tcp.port was set to:" &&
+                printf "Property persist.adb.tcp.port was set to:" &&
                 adb -s "${socket}" shell su --command "getprop persist.adb.tcp.port" && #set adbd persistent(boot) tcp port
                 echo ""
 
