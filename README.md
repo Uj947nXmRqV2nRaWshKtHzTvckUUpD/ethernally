@@ -15,6 +15,7 @@
 * Drops you to a wireless shell on the device
 * Works in Linux and in Windows via cygwin or WSL (Windows Subsystem for Linux)
 * Tackles all scenarios that could get you into issues. It even finds a way when Wi-Fi is turned off!
+* POSIX compatible
 </details>
 
 
