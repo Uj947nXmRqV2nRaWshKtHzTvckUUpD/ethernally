@@ -290,21 +290,12 @@ mirror() {
     bitRate="--bit-rate"
     bitRateValue="6M"
 
-    options=("${stayAwake}" "${turnScreenOff}" "${renderDriver}" "${maxSize}" "${maxSizeValue}" "${maxFps}" "${maxFpsValue}" "${bitRate}" "${bitRateValue}")
-    # echo "scrcpy options: ${options[*]}"
-    index=0
-    for item in "${options[@]}"; do
-        # echo "item: ${item}"
-        # echo "index: ${index}"
-        if [ -z "${item}" ]; then
-            # echo "empty index: ${index}"
-            unset options[${index}]
-        fi
-        index=$((index + 1))
-    done
-    echo "Running scrcpy with options: ${options[*]}"
-
-    scrcpy -s "${socket}" "${options[@]}" &
+    # scrcpy -s "${socket}" "${options[@]}" &
+    options=$( printf %s "${socket} ${stayAwake} ${turnScreenOff} ${maxSize} ${maxSizeValue} ${maxFps} ${maxFpsValue} ${bitRate} ${bitRateValue}")
+    # echo "${options}"
+    scrcpyCommand="scrcpy -s ${options} &"
+    eval "${scrcpyCommand}"
+    # "${options}" &
 
     # >/dev/null
     # mirror android screen via wifi, assuming that scrcpy is already installed or added to PATH ; modify custom options as desired
