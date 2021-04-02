@@ -1,5 +1,6 @@
 #!/bin/sh
 
+
 # this script automatically sets permanent adb via wifi and eventually start scrcpy through WiFi
 
 # set the default adbd listening port
