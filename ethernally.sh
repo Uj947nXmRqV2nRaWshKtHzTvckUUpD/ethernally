@@ -1,6 +1,5 @@
 #!/bin/sh
 
-
 # this script automatically sets permanent adb via wifi and eventually start scrcpy through WiFi
 
 # set the default adbd listening port
@@ -25,6 +24,10 @@ echo "Running script from $DIRECTORY"
 
 last_working_device="$DIRECTORY/last_working_device.conf"
 touch "${last_working_device}"
+
+debug_log="$DIRECTORY/debug.log"
+true > "${debug_log}"
+# empty log
 
 ######################################################################################################################
 
@@ -83,16 +86,17 @@ check_root() {
     # sed is required to fix line ending by removing dos carriage return (cygwin)
     # echo "elevated_UID: ${elevated_UID}"
 
-    if [ "${elevated_UID}" -ne 0 ]; then
+    if [ -z "${elevated_UID}" ]; then
         echo "Your device needs to be rooted for allowing permanent WiFi connectivity through ADB"
         rooted=0
         # echo "rooted: ${rooted}"
         # exit 1
     else
         echo "Device is rooted. Moving on.."
+        rooted=1
         echo ""
     fi
-
+    echo "rooted=${rooted}" >>"${debug_log}"
 }
 
 start_wifi_connection() {
@@ -179,14 +183,14 @@ usb_connection() {
 
         #Set props
         adb -s "${usb_device_serial}" shell su --command "setprop service.adb.tcp.port ${port}" &&
-            printf "Property service.adb.tcp.port was set to:" &&
+            printf "Property service.adb.tcp.port was set to: " &&
             adb -s "${usb_device_serial}" shell su --command "getprop service.adb.tcp.port"
-            # set adbd session tcp port
+        # set adbd session tcp port
 
         adb -s "${usb_device_serial}" shell su --command "setprop persist.adb.tcp.port ${port}" &&
-            printf "Property persist.adb.tcp.port was set to:" &&
+            printf "Property persist.adb.tcp.port was set to: " &&
             adb -s "${usb_device_serial}" shell su --command "getprop persist.adb.tcp.port"
-            # set adbd persistent(boot) tcp port
+        # set adbd persistent(boot) tcp port
 
         echo "Restarting adbd"
         adb -s "${usb_device_serial}" shell "su --command 'stop adbd ; sleep 2 ; start adbd'"
@@ -198,7 +202,6 @@ usb_connection() {
 
     fi
 
-
     echo "Attempting to start Wi-Fi on the device.."
     wlan0_IP=$(start_wifi_connection)
     #echo "wlan0_IP: ${wlan0_IP}"
@@ -206,6 +209,7 @@ usb_connection() {
     echo "new socket: ${socket}"
 
     status=$(adb connect "${socket}")
+    echo "ADB connect status: ${status}" >>"${debug_log}"
     # adb returns exit code 0 even if cannot connect. not reliable...
 
     if [ "${status#*cannot}" != "${status}" ]; then
@@ -213,7 +217,7 @@ usb_connection() {
         echo "Could not connect via adb to WiFi device"
         connected="0"
     else
-    # Wi-Fi connectivity worked
+        # Wi-Fi connectivity worked
         echo "Connecting via wifi.."
         adb connect "${socket}"
         # reconnect to shell via wifi. You can unplug USB cable at this stage. scrcpy should work now
@@ -229,7 +233,7 @@ usb_connection() {
 
         echo ""
     fi
-
+    echo "connected=${connected}" >>"${debug_log}"
 }
 
 success_message() {
@@ -292,7 +296,7 @@ mirror() {
     bitRateValue="6M"
 
     # scrcpy -s "${socket}" "${options[@]}" &
-    options=$( printf %s "${socket} ${stayAwake} ${turnScreenOff} ${maxSize} ${maxSizeValue} ${maxFps} ${maxFpsValue} ${bitRate} ${bitRateValue}")
+    options=$(printf %s "${socket} ${stayAwake} ${turnScreenOff} ${maxSize} ${maxSizeValue} ${maxFps} ${maxFpsValue} ${bitRate} ${bitRateValue}")
     # echo "${options}"
     scrcpyCommand="scrcpy -s ${options} &"
     eval "${scrcpyCommand}"
@@ -346,7 +350,7 @@ try_last_known_device() {
                 echo "Could not connect via ADB to last known WiFi device"
                 echo ""
                 connected="0"
-                printf "" > "${last_working_device}"
+                printf "" >"${last_working_device}"
                 # remove last known working device
             else
                 echo "Connected via ADB to last known WiFi device:"
@@ -364,6 +368,7 @@ try_last_known_device() {
         echo "There is no last known working device."
 
     fi
+
 
 }
 
@@ -398,6 +403,7 @@ if [ -z "${socket}" ]; then
     connected="0"
 
     try_last_known_device
+    echo "last known device connected=${connected}" >"${debug_log}"
 
 else
     # socket not null
@@ -437,6 +443,7 @@ if [ ${connected} = 1 ] && [ -n "${socket}" ] && [ ${socket} != "null" ]; then
     # WARNING! there is a bug that after being disconnected, still appears in devices list
 
     device=${socket}
+    echo "connected device: ${device}" >"${debug_log}"
 
     # check if device is rooted
     check_root ${device}
@@ -452,23 +459,23 @@ if [ ${connected} = 1 ] && [ -n "${socket}" ] && [ ${socket} != "null" ]; then
     else
         # device rooted
 
-        adb -s "${socket}" shell su --command "adbd --version" >/dev/null
+        adb -s "${socket}" shell su --command "getprop ro.product.model" >/dev/null
         # try to get adb daemon version on android through wifi only . return "error: closed" in case it cannot run the command
         exitCode="$?"
         # echo "exitCode: ${exitCode}"
         if [ ${exitCode} = 0 ]; then
-        # wifi shell command succeded
+            # wifi shell command succeded
             # No need to plug USB cable
             # Set props
             adb -s "${socket}" shell su --command "setprop persist.adb.tcp.port ${port}" &&
-                printf "Property persist.adb.tcp.port was set to:" &&
+                printf "Property persist.adb.tcp.port was set to: " &&
                 adb -s "${socket}" shell su --command "getprop persist.adb.tcp.port" && # set adbd persistent(boot) tcp port
                 echo ""
 
             ethernally
 
         else
-        # wifi shell command failed for some reason.
+            # wifi shell command failed for some reason.
             echo "WiFi shell command failed."
             # skip to USB
             usb_connection
@@ -478,7 +485,7 @@ if [ ${connected} = 1 ] && [ -n "${socket}" ] && [ ${socket} != "null" ]; then
     fi
 
 else
-# cases: (wifi 0 ; usb 0) OR (wifi 0 ; USB 1)
+    # cases: (wifi 0 ; usb 0) OR (wifi 0 ; USB 1)
     echo ""
     echo "Wi-Fi seems to be turned off or ADB debugging not enabled on device."
     echo "Could not connect via WiFi, switching to USB mode"
