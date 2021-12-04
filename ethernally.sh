@@ -239,7 +239,7 @@ usb_connection() {
 success_message() {
 
     echo "######################################"
-    echo "You can now unplug the USB cable."
+    echo "You may unplug the USB cable if previously inserted."
     # echo "Optionally you can mirror your screen with scrcpy."
     echo "######################################"
     echo "Enjoy a smooth wireless experience!"
@@ -284,6 +284,8 @@ print_connections() {
 
 mirror() {
 
+    echo "Attempting screen mirroring.."
+
     stayAwake="--stay-awake"
     turnScreenOff="--turn-screen-off"
     maxSize="--max-size"
@@ -295,10 +297,18 @@ mirror() {
     bitRate="--bit-rate"
     bitRateValue="6M"
 
-    # scrcpy -s "${socket}" "${options[@]}" &
     options=$(printf %s "${socket} ${stayAwake} ${turnScreenOff} ${maxSize} ${maxSizeValue} ${maxFps} ${maxFpsValue} ${bitRate} ${bitRateValue}")
+    # options=$(printf %s)
     # echo "${options}"
+
     scrcpyCommand="scrcpy -s ${options} &"
+    # scrcpyCommand="scrcpy --tcpip=${options} &"
+    # scrcpyCommand="scrcpy &"
+
+    # Eg. # scrcpy -s <IP> --stay-awake --turn-screen-off --max-size 1920 --max-fps 45 --bit-rate 6M
+
+    # scrcpy -s "${socket}" "${options[@]}" &
+
     eval "${scrcpyCommand}"
     # "${options}" &
 
@@ -318,6 +328,7 @@ ethernally() {
     success_message
     sleep 3
     # wait for scrcpy to start mirroring
+
     adb -s "${socket}" shell
     # uncomment to get you straight into android shell (you can comment this line)
     # from here you can 'su -' to drop to root shell
