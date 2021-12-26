@@ -26,7 +26,7 @@ last_working_device="$DIRECTORY/last_working_device.conf"
 touch "${last_working_device}"
 
 debug_log="$DIRECTORY/debug.log"
-true > "${debug_log}"
+true >"${debug_log}"
 # empty log
 
 ######################################################################################################################
@@ -158,7 +158,15 @@ usb_connection() {
     # sleep 1
 
     echo ""
-    echo "Please plug USB cable and enable USB debugging (To unlock the hidden Developer tools/options menu, go to Android Settings > About > Press on 'build number' 7 times. Then go to android settings > developer tools/options and enable USB debugging)"
+    echo ""
+
+    echo "!!! READ CAREFULLY !!!"
+
+    echo "Please plug USB cable and enable USB debugging (To unlock the hidden Developer tools/options menu, go to Android Settings > About > Press on 'build number' 7 times. Then go to android settings > developer tools/options and enable 'USB debugging')"
+    echo ""
+    echo "You should also check 'Disable adb authorization timeout' so that the adb authorization for systems that have not reconnected within the default (7days) is not revoked, thus to be able to reconnect in the future without interaction."
+    echo ""
+    echo "If asked, allow USB debugging on your Android device by allowing your computer's RSA key fingerprint. Also check the 'Always allow from this computer' checkbox to allow future connections"
 
     echo ""
     echo "Checking if USB cable is connected and USB debugging enabled.."
@@ -380,7 +388,6 @@ try_last_known_device() {
 
     fi
 
-
 }
 
 ######################################################################################################################
@@ -389,7 +396,7 @@ try_last_known_device() {
 
 # CASES
 # usb	wifi
-# 0      0
+# 0     0
 # 1	    0
 # 0	    1
 # 1	    1
@@ -403,9 +410,9 @@ socket=$(adb devices -l | grep ${port} | awk '{print $1}')
 
 echo "Disconnecting adb and killing adb server.."
 adb disconnect >/dev/null
-# upon reboot, sometimes even if connected, shell will give "error: closed" on first attempt, but on second will work. Need to disconnect and reconnect to make sure the connection is ok
+# upon reboot, sometimes even if connected, shell will give "error: closed" on first attempt, but on second will work. Need to disconnect and reconnect to make sure the connection is ok. At this point any previous attatched devices will no longer be attatched.
 adb kill-server
-# is it really needed?
+# is this really needed?
 
 if [ -z "${socket}" ]; then
     echo "There are no WiFi devices automatically detected/attached - as reported by ADB."
@@ -421,23 +428,24 @@ else
 
     echo "Attempting ADB connection via Wi-Fi first. Please wait..."
     status=$(adb connect ${socket})
-    # adb returns exit code 0 even if it cannot connect. not reliable...
+    # adb returns exit code 0 even if it cannot connect. not reliable... Need extra error handling:
 
-    if [ "${status#*cannot}" != "${status}" ]; then
-
-        # EXAMPLE ERRORS:
-        #cannot connect to <wlan0_IP>:5555: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (10060)
-        # cannot resolve host 'null' and port 5555: No such host is known. (11001)
-
-        echo "Could not connect via ADB to any automatically detected WiFi device"
+    if [ "${status#*failed}" != "${status}" ]; then
+        echo "Failed to authenticate via ADB to the automatically detected WiFi device"
+        echo "You must authorize device via USB cable..."
         connected="0"
-
-        try_last_known_device
-
+        usb_connection
     else
-        echo "Connected via ADB to WiFi device"
-        echo ""
-        connected="1"
+
+        if [ "${status#*cannot}" != "${status}" ]; then
+            echo "Could not connect via ADB to any automatically detected WiFi device"
+            connected="0"
+            try_last_known_device
+        else
+            echo "Connected via ADB to WiFi device"
+            echo ""
+            connected="1"
+        fi
     fi
 
 fi
