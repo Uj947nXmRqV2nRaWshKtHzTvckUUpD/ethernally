@@ -365,20 +365,32 @@ try_last_known_device() {
             echo "Last known working socket: ${socket}"
 
             status=$(adb connect "${socket}")
-            if [ "${status#*cannot}" != "${status}" ]; then
-                echo "Could not connect via ADB to last known WiFi device"
-                echo ""
+
+            # adb returns exit code 0 even if it cannot connect. not reliable... Need extra error handling:
+
+            if [ "${status#*failed}" != "${status}" ]; then
+                echo "Failed to authenticate via ADB to the automatically detected WiFi device"
+                echo "You must authorize device via USB cable..."
                 connected="0"
-                printf "" >"${last_working_device}"
-                # remove last known working device
+                usb_connection
             else
-                echo "Connected via ADB to last known WiFi device:"
-                cat "${last_working_device}"
-                echo ""
-                connected="1"
+
+                if [ "${status#*cannot}" != "${status}" ]; then
+                    echo "Could not connect via ADB to last known WiFi device"
+                    echo ""
+                    connected="0"
+                    printf "" >"${last_working_device}"
+                    # remove last known working device
+                else
+                    echo "Connected via ADB to last known WiFi device:"
+                    cat "${last_working_device}"
+                    echo ""
+                    connected="1"
+                fi
             fi
 
         else
+
             echo "Skipping verifying connection with last known working device as it is the same as the one reported by ADB attached device which cannot connect.."
 
         fi
