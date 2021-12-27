@@ -9,9 +9,11 @@
  
 * Mirrors your screen wirelessly with scrcpy
 * New! Support for non-rooted devices
+* New! Supports Android 11
 * Automatically adds Wi-Fi adb connection capability at boot [root only]
-* Connects through adb via Wi-Fi
+* Connects through adb via Wi-Fi or USB cable
 * Remembers last known working Wi-Fi IP for fast connection
+* Works even when authorization was revoked due to expiration (Android 11)
 * Drops you to a wireless shell on the device
 * Works in Linux and in Windows via cygwin or WSL (Windows Subsystem for Linux)
 * Tackles all scenarios that could get you into issues. It even finds a way when Wi-Fi is turned off!
@@ -32,7 +34,7 @@
 
 * Prerequisites:
 ```
-dos2unix ethernally.sh #might be needed to convert line endings to unix format
+dos2unix ethernally.sh #optional, might be needed to convert line endings to unix format (eg. when using Github for Desktop)
 chmod +x ethernally.sh #make the script executable
 ```
 * Simply run the script from its folder (`cd ethernally`) and follow the intuitive wizard guide:
