@@ -447,14 +447,12 @@ else
 
     if [ "${status#*failed}" != "${status}" ]; then
         echo "Failed to authenticate via ADB to the automatically detected WiFi device"
-        echo "You must authorize device via USB cable..."
-        connected="0"
         try_last_known_device
         echo "Disconnecting adb and killing adb server.."
         # workaround - bug/feature? able to connect to unauthorized device
         adb disconnect >/dev/null
         adb kill-server
-        echo "Attempting ADB connection via Wi-Fi to the attatched device. Please wait..."
+        echo "Re-attempting ADB connection via Wi-Fi to the attatched device. Please wait..."
         status=$(adb connect ${socket})
         if [ "${status#*cannot}" = "${status}" ] &&  [ "${status#*failed}" = "${status}" ]; then
             echo "Connected via ADB to WiFi device"
@@ -462,6 +460,7 @@ else
             connected="1"
         else
             connected="0"
+            usb_connection
         fi
     else
 
