@@ -46,7 +46,7 @@ get_device_serial() {
 
 check_usb_connection() {
 
-    echo "killing adb server.."
+    echo "DEBUG> killing adb server.."
     adb kill-server
 
     while [ -z "${usb_device_serial}" ]; do
@@ -164,6 +164,7 @@ usb_connection() {
 
     echo ""
     echo "Checking if USB cable is connected and USB debugging enabled and authorized.."
+    echo "......"
 
     check_usb_connection
 
@@ -440,10 +441,10 @@ echo ""
 socket=$(adb devices -l | grep ${port} | awk '{print $1}')
 # try to get attached device wlan0 ip, even if offline
 
-echo "Disconnecting adb and killing adb server.."
+echo "Disconnecting adb devices.."
 adb disconnect >/dev/null
 # upon reboot, sometimes even if connected, shell will give "error: closed" on first attempt, but on second will work. Need to disconnect and reconnect to make sure the connection is ok. At this point any previous attatched devices will no longer be attatched.
-echo "killing adb server.."
+echo "DEBUG> killing adb server.."
 adb kill-server
 
 
@@ -472,10 +473,10 @@ else
 
         echo "Failed to authenticate via ADB to the automatically detected WiFi device"
         try_last_known_device
-        echo "Disconnecting adb and killing adb server.."
+        echo "Disconnecting adb devices.."
         # workaround - bug/feature? able to connect to unauthorized device
         adb disconnect >/dev/null
-        echo "killing adb server.."
+        echo "DEBUG> killing adb server.."
         adb kill-server
         echo "Re-attempting ADB connection via Wi-Fi to the attatched device. Please wait..."
         status=$(adb connect ${socket})
