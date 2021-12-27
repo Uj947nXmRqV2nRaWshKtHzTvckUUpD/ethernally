@@ -456,7 +456,7 @@ else
         adb kill-server
         echo "Attempting ADB connection via Wi-Fi to the attatched device. Please wait..."
         status=$(adb connect ${socket})
-        if [ "${status#*cannot}" == "${status}" &&  "${status#*failed}" == "${status}" ]; then
+        if [ "${status#*cannot}" = "${status}" ] &&  [ "${status#*failed}" = "${status}" ]; then
             echo "Connected via ADB to WiFi device"
             echo ""
             connected="1"
