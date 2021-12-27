@@ -372,10 +372,8 @@ try_last_known_device() {
 
         # adb returns exit code 0 even if it cannot connect. not reliable... Need extra error handling:
 
-
         # ERROR #1: status: "failed to authenticate to <IP>:<PORT>" (if device was not previously authorized via USB cable. Note: a device can only be authorized by USB cable and not by Wi-Fi)
         # ERROR #2: status: cannot connect to 192.168.100.5:5555: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (10060)
-
 
         if [ "${status#*failed}" != "${status}" ]; then
             echo "Failed to authenticate via ADB to the automatically detected WiFi device or Failed because connected host has failed to respond"
