@@ -46,6 +46,7 @@ get_device_serial() {
 
 check_usb_connection() {
 
+    echo "killing adb server.."
     adb kill-server
 
     while [ -z "${usb_device_serial}" ]; do
@@ -150,13 +151,6 @@ usb_connection() {
 
     # ((device does not have WiFi turned on) OR (does not have an IP set)) OR (device is NOT already attached via (tcp/wifi OR USB))
 
-    # try detecting plugged USB cable; debugging should be turned on, fingerprint accepted
-
-    # disconnect any existing connection, kill any adb server on pc (to start from scratch). Not needed actually..
-    # adb disconnect
-    # adb kill-server
-    # sleep 1
-
     echo ""
     echo ""
 
@@ -222,6 +216,12 @@ usb_connection() {
 
     if [ "${status#*cannot}" != "${status}" ]; then
         # posix trick to determine if status contains word "cannot"
+
+        # EXAMPLE "cannot" ERRORS:
+        # 1. "cannot connect to <wlan0_IP>:5555: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (10060)"
+        # 2. "cannot resolve host 'null' and port 5555: No such host is known. (11001)"
+        # 3. "cannot connect to <IP>:5555: No connection could be made because the target machine actively refused it. (10061)"
+
         echo "Could not connect via adb to WiFi device"
         connected="0"
         echo "connected: false"
@@ -372,10 +372,12 @@ try_last_known_device() {
 
         # adb returns exit code 0 even if it cannot connect. not reliable... Need extra error handling:
 
-        # ERROR #1: status: "failed to authenticate to <IP>:<PORT>" (if device was not previously authorized via USB cable. Note: a device can only be authorized by USB cable and not by Wi-Fi)
-        # ERROR #2: status: cannot connect to 192.168.100.5:5555: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (10060)
-
         if [ "${status#*failed}" != "${status}" ]; then
+            # posix trick to determine if status contains word "failed"
+
+            # 1. "failed to authenticate to <IP>:<PORT>"
+            # 2. "cannot connect to <IP>:<PORT>: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (10060)" [!!! this error contains both 'failed' and 'cannot' keywords, but 'failed' keyword is checked first]
+
             echo "Failed to authenticate via ADB to the automatically detected WiFi device or Failed because connected host has failed to respond"
             echo "You must authorize device via USB cable..."
             connected="0"
@@ -384,6 +386,13 @@ try_last_known_device() {
         else
 
             if [ "${status#*cannot}" != "${status}" ]; then
+                # posix trick to determine if status contains word "cannot"
+
+                # EXAMPLE "cannot" ERRORS:
+                # 1. cannot connect to <wlan0_IP>:5555: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (10060)
+                # 2. cannot resolve host 'null' and port 5555: No such host is known. (11001)
+                # 3. cannot connect to <IP>:5555: No connection could be made because the target machine actively refused it. (10061)
+
                 echo "Could not connect via ADB to last known WiFi device"
                 echo ""
                 connected="0"
@@ -434,8 +443,9 @@ socket=$(adb devices -l | grep ${port} | awk '{print $1}')
 echo "Disconnecting adb and killing adb server.."
 adb disconnect >/dev/null
 # upon reboot, sometimes even if connected, shell will give "error: closed" on first attempt, but on second will work. Need to disconnect and reconnect to make sure the connection is ok. At this point any previous attatched devices will no longer be attatched.
+echo "killing adb server.."
 adb kill-server
-# is this really needed?
+
 
 if [ -z "${socket}" ]; then
     echo "There are no WiFi devices automatically detected/attached - as reported by ADB."
@@ -455,15 +465,32 @@ else
     # adb returns exit code 0 even if it cannot connect. not reliable... Need extra error handling:
 
     if [ "${status#*failed}" != "${status}" ]; then
+        # posix trick to determine if status contains word "failed"
+
+        # 1. "failed to authenticate to <IP>:<PORT>"
+        # 2. "cannot connect to <IP>:<PORT>: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (10060)" [!!! this error contains both 'failed' and 'cannot' keywords, but 'failed' keyword is checked first]
+
         echo "Failed to authenticate via ADB to the automatically detected WiFi device"
         try_last_known_device
         echo "Disconnecting adb and killing adb server.."
         # workaround - bug/feature? able to connect to unauthorized device
         adb disconnect >/dev/null
+        echo "killing adb server.."
         adb kill-server
         echo "Re-attempting ADB connection via Wi-Fi to the attatched device. Please wait..."
         status=$(adb connect ${socket})
         if [ "${status#*cannot}" = "${status}" ] && [ "${status#*failed}" = "${status}" ]; then
+            # posix trick to determine if status contains words "failed" or "cannot"
+
+            # EXAMPLE "cannot" ERRORS:
+            # 1. "cannot connect to <wlan0_IP>:5555: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (10060)"
+            # 2. "cannot resolve host 'null' and port 5555: No such host is known. (11001)"
+            # 3. "cannot connect to <IP>:5555: No connection could be made because the target machine actively refused it. (10061)"
+
+            # EXAMPLE "failed" ERRORS:
+            # 1. "failed to authenticate to <IP>:<PORT>"
+            # 2. "cannot connect to <IP>:<PORT>: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (10060)" [!!! this error contains both 'failed' and 'cannot' keywords, but 'failed' keyword is checked first]
+
             echo "Connected via ADB to WiFi device"
             echo ""
             connected="1"
@@ -477,7 +504,14 @@ else
     else
 
         if [ "${status#*cannot}" != "${status}" ]; then
+            # posix trick to determine if status contains word "cannot"
             echo "Could not connect via ADB to any automatically detected WiFi device"
+
+            # EXAMPLE "cannot" ERRORS:
+            # 1. "cannot connect to <wlan0_IP>:5555: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (10060)"
+            # 2. "cannot resolve host 'null' and port 5555: No such host is known. (11001)"
+            # 3. "cannot connect to <IP>:5555: No connection could be made because the target machine actively refused it. (10061)"
+
             connected="0"
             echo "connected: false"
             try_last_known_device
@@ -553,3 +587,16 @@ else
     usb_connection
     ethernally
 fi
+
+##################################
+
+# Notes:
+
+## To reproduce failed with "unauthorized" scenario:
+
+# adb devices # should show "<socket> device"
+# 'Revoke USB debugging authorizations' from device's 'Developer Options'
+# adb disconnect
+# adb connect <socket> # will show "failed to authenticate to <socket>" and also a popup will appear on the device to "Allow USB debugging" for the computer's RSA key fingerprint.
+# adb connect <socket> # will show "already connected to <socket>"
+# adb devices # will show "<socket> unauthorized"
