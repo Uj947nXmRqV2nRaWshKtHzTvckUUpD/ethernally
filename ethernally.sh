@@ -347,7 +347,7 @@ ethernally() {
 try_last_known_device() {
 
     echo ""
-    echo "Trying last known working device.."
+    echo "Trying last known working device. Please have patience..."
 
     if [ -s "${last_working_device}" ]; then
 
@@ -394,7 +394,7 @@ try_last_known_device() {
    #     else
 
             #echo "Skipping verifying connection"
-            echo "Last known working device is the same as the one reported by ADB attached devices"
+            #echo "Last known working device is the same as the one reported by ADB attached devices"
 
   #      fi
 
