@@ -34,6 +34,7 @@
 
 * Prerequisites:
 ```
+  # perl is required (eg. in cygwin)
 dos2unix ethernally.sh #optional, might be needed to convert line endings to unix format (eg. when using Github for Desktop)
 chmod +x ethernally.sh #make the script executable
 ```
