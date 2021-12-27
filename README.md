@@ -9,7 +9,7 @@
  
 * Mirrors your screen wirelessly with scrcpy
 * New! Support for non-rooted devices
-* New! Supports Android 11
+* New! Supports Android 12
 * Automatically adds Wi-Fi adb connection capability at boot [root only]
 * Connects through adb via Wi-Fi or USB cable
 * Remembers last known working Wi-Fi IP for fast connection
