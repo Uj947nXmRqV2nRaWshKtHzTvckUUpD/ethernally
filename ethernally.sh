@@ -163,6 +163,9 @@ usb_connection() {
     echo "3. If asked, allow USB debugging on your Android device by allowing your computer's RSA key fingerprint. Also check the 'Always allow from this computer' checkbox to allow future connections"
 
     echo ""
+    echo ""
+    echo ""
+    
     echo "Checking if USB cable is connected and USB debugging enabled and authorized.."
     echo "......"
 
