@@ -45,8 +45,8 @@ jobs:
 #       - name: create reports folder
 #         run: |
 #           mkdir -p ${GITHUB_WORKSPACE}/github/workspace/
-      - name: Lint Code Base
-        uses: github/super-linter@v3
+      - name: Super-Linter
+        uses: github/super-linter@v4.8.5
         env:
           FILTER_REGEX_INCLUDE: .*.sh
           # only sh files linted
