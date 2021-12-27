@@ -359,44 +359,49 @@ try_last_known_device() {
 
         last_working_socket="${last_working_IP}:${last_Working_port}"
 
-   #     if [ "${last_working_socket}" != "${socket}" ]; then
+        #     if [ "${last_working_socket}" != "${socket}" ]; then
 
-            socket="${last_working_socket}"
-            echo "Last known working socket: ${socket}"
+        socket="${last_working_socket}"
+        echo "Last known working socket: ${socket}"
 
-            status=$(adb connect "${socket}")
+        status=$(adb connect "${socket}")
 
-            echo "status: ${status}"
+        echo "status: ${status}"
 
-            # adb returns exit code 0 even if it cannot connect. not reliable... Need extra error handling:
+        # adb returns exit code 0 even if it cannot connect. not reliable... Need extra error handling:
 
-            if [ "${status#*failed}" != "${status}" ]; then
-                echo "Failed to authenticate via ADB to the automatically detected WiFi device"
-                echo "You must authorize device via USB cable..."
+
+        # ERROR #1: status: "failed to authenticate to <IP>:<PORT>" (if device was not previously authorized via USB cable. Note: a device can only be authorized by USB cable and not by Wi-Fi)
+        # ERROR #2: status: cannot connect to 192.168.100.5:5555: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. (10060)
+
+
+        if [ "${status#*failed}" != "${status}" ]; then
+            echo "Failed to authenticate via ADB to the automatically detected WiFi device or Failed because connected host has failed to respond"
+            echo "You must authorize device via USB cable..."
+            connected="0"
+            usb_connection
+        else
+
+            if [ "${status#*cannot}" != "${status}" ]; then
+                echo "Could not connect via ADB to last known WiFi device"
+                echo ""
                 connected="0"
-                usb_connection
+                printf "" >"${last_working_device}"
+                # remove last known working device
             else
-
-                if [ "${status#*cannot}" != "${status}" ]; then
-                    echo "Could not connect via ADB to last known WiFi device"
-                    echo ""
-                    connected="0"
-                    printf "" >"${last_working_device}"
-                    # remove last known working device
-                else
-                    echo "Connected via ADB to last known WiFi device:"
-                    cat "${last_working_device}"
-                    echo ""
-                    connected="1"
-                fi
+                echo "Connected via ADB to last known WiFi device:"
+                cat "${last_working_device}"
+                echo ""
+                connected="1"
             fi
+        fi
 
-   #     else
+        #     else
 
-            #echo "Skipping verifying connection"
-            #echo "Last known working device is the same as the one reported by ADB attached devices"
+        #echo "Skipping verifying connection"
+        #echo "Last known working device is the same as the one reported by ADB attached devices"
 
-  #      fi
+        #      fi
 
     else
         echo "There is no last known working device."
@@ -454,7 +459,7 @@ else
         adb kill-server
         echo "Re-attempting ADB connection via Wi-Fi to the attatched device. Please wait..."
         status=$(adb connect ${socket})
-        if [ "${status#*cannot}" = "${status}" ] &&  [ "${status#*failed}" = "${status}" ]; then
+        if [ "${status#*cannot}" = "${status}" ] && [ "${status#*failed}" = "${status}" ]; then
             echo "Connected via ADB to WiFi device"
             echo ""
             connected="1"
