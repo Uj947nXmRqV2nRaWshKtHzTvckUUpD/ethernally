@@ -224,6 +224,7 @@ usb_connection() {
         # posix trick to determine if status contains word "cannot"
         echo "Could not connect via adb to WiFi device"
         connected="0"
+        echo "connected: false"
     else
         # Wi-Fi connectivity worked
         echo "Connecting via wifi.."
@@ -232,6 +233,7 @@ usb_connection() {
 
         # 0 if failed ; 1 if connected
         connected="1"
+        echo "connected: true"
         # echo "connected: ${connected}"
 
         # set last known working device
@@ -347,7 +349,7 @@ ethernally() {
 try_last_known_device() {
 
     echo ""
-    echo "Trying last known working device. Please have patience..."
+    echo "Trying last known working device. Please have patience... (max 1 minute)"
 
     if [ -s "${last_working_device}" ]; then
 
@@ -379,6 +381,7 @@ try_last_known_device() {
             echo "Failed to authenticate via ADB to the automatically detected WiFi device or Failed because connected host has failed to respond"
             echo "You must authorize device via USB cable..."
             connected="0"
+            echo "connected: false"
             usb_connection
         else
 
@@ -386,6 +389,7 @@ try_last_known_device() {
                 echo "Could not connect via ADB to last known WiFi device"
                 echo ""
                 connected="0"
+                echo "connected: false"
                 printf "" >"${last_working_device}"
                 # remove last known working device
             else
@@ -393,6 +397,7 @@ try_last_known_device() {
                 cat "${last_working_device}"
                 echo ""
                 connected="1"
+                echo "connected: true"
             fi
         fi
 
@@ -401,7 +406,7 @@ try_last_known_device() {
         #echo "Skipping verifying connection"
         #echo "Last known working device is the same as the one reported by ADB attached devices"
 
-        #      fi
+        #      fi# this check might not be needed anymore..
 
     else
         echo "There is no last known working device."
@@ -415,7 +420,7 @@ try_last_known_device() {
 # MAIN
 
 # CASES
-# usb	wifi
+# usb	wifi#
 # 0     0
 # 1	    0
 # 0	    1
@@ -439,12 +444,13 @@ if [ -z "${socket}" ]; then
     socket="null"
     # set to null so that adb connect fails
     connected="0"
+    echo "connected: false"
 
     try_last_known_device
     echo "last known device connected=${connected}" >"${debug_log}"
 
 else
-    # socket not null. Devices attatched.
+    echo "socket not null. Devices were attatched."
 
     echo "Attempting ADB connection via Wi-Fi to the attatched device. Please wait..."
     status=$(adb connect ${socket})
@@ -463,20 +469,25 @@ else
             echo "Connected via ADB to WiFi device"
             echo ""
             connected="1"
+            echo "connected: true"
         else
             connected="0"
+            echo "connected: false"
             usb_connection
+            # shouldn't reach this...
         fi
     else
 
         if [ "${status#*cannot}" != "${status}" ]; then
             echo "Could not connect via ADB to any automatically detected WiFi device"
             connected="0"
+            echo "connected: false"
             try_last_known_device
         else
             echo "Connected via ADB to WiFi device"
             echo ""
             connected="1"
+            echo "connected: true"
         fi
     fi
 
