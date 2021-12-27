@@ -6,7 +6,7 @@
 port="5555"
 
 ######################################################################################################################
-clear
+# clear
 
 # check adb presence on host
 if ! type adb >/dev/null; then
@@ -162,14 +162,14 @@ usb_connection() {
 
     echo "!!! READ CAREFULLY !!!"
 
-    echo "Please plug USB cable and enable USB debugging (To unlock the hidden Developer tools/options menu, go to Android Settings > About > Press on 'build number' 7 times. Then go to android settings > developer tools/options and enable 'USB debugging')"
+    echo "1. Please plug USB cable and enable USB debugging (To unlock the hidden Developer tools/options menu, go to Android Settings > About > Press on 'build number' 7 times. Then go to android settings > developer tools/options and enable 'USB debugging')"
     echo ""
-    echo "You should also check 'Disable adb authorization timeout' so that the adb authorization for systems that have not reconnected within the default (7days) is not revoked, thus to be able to reconnect in the future without interaction."
+    echo "2. You should also check 'Disable adb authorization timeout' so that the adb authorization for systems that have not reconnected within the default (7days) is not revoked, thus to be able to reconnect in the future without interaction."
     echo ""
-    echo "If asked, allow USB debugging on your Android device by allowing your computer's RSA key fingerprint. Also check the 'Always allow from this computer' checkbox to allow future connections"
+    echo "3. If asked, allow USB debugging on your Android device by allowing your computer's RSA key fingerprint. Also check the 'Always allow from this computer' checkbox to allow future connections"
 
     echo ""
-    echo "Checking if USB cable is connected and USB debugging enabled.."
+    echo "Checking if USB cable is connected and USB debugging enabled and authorized.."
 
     check_usb_connection
 
@@ -359,12 +359,14 @@ try_last_known_device() {
 
         last_working_socket="${last_working_IP}:${last_Working_port}"
 
-        if [ "${last_working_socket}" != "${socket}" ]; then
+   #     if [ "${last_working_socket}" != "${socket}" ]; then
 
             socket="${last_working_socket}"
             echo "Last known working socket: ${socket}"
 
             status=$(adb connect "${socket}")
+
+            echo "status: ${status}"
 
             # adb returns exit code 0 even if it cannot connect. not reliable... Need extra error handling:
 
@@ -389,11 +391,12 @@ try_last_known_device() {
                 fi
             fi
 
-        else
+   #     else
 
-            echo "Skipping verifying connection with last known working device as it is the same as the one reported by ADB attached device which cannot connect.."
+            #echo "Skipping verifying connection"
+            echo "Last known working device is the same as the one reported by ADB attached devices"
 
-        fi
+  #      fi
 
     else
         echo "There is no last known working device."
@@ -436,9 +439,9 @@ if [ -z "${socket}" ]; then
     echo "last known device connected=${connected}" >"${debug_log}"
 
 else
-    # socket not null
+    # socket not null. Devices attatched.
 
-    echo "Attempting ADB connection via Wi-Fi first. Please wait..."
+    echo "Attempting ADB connection via Wi-Fi to the attatched device. Please wait..."
     status=$(adb connect ${socket})
     # adb returns exit code 0 even if it cannot connect. not reliable... Need extra error handling:
 
@@ -446,7 +449,20 @@ else
         echo "Failed to authenticate via ADB to the automatically detected WiFi device"
         echo "You must authorize device via USB cable..."
         connected="0"
-        usb_connection
+        try_last_known_device
+        echo "Disconnecting adb and killing adb server.."
+        # workaround - bug/feature? able to connect to unauthorized device
+        adb disconnect >/dev/null
+        adb kill-server
+        echo "Attempting ADB connection via Wi-Fi to the attatched device. Please wait..."
+        status=$(adb connect ${socket})
+        if [ "${status#*cannot}" == "${status}" &&  "${status#*failed}" == "${status}" ]; then
+            echo "Connected via ADB to WiFi device"
+            echo ""
+            connected="1"
+        else
+            connected="0"
+        fi
     else
 
         if [ "${status#*cannot}" != "${status}" ]; then
@@ -474,6 +490,7 @@ if [ ${connected} = 1 ] && [ -n "${socket}" ] && [ ${socket} != "null" ]; then
     # WARNING! there is a bug that after being disconnected, still appears in devices list
 
     device=${socket}
+    echo "device: ${device}"
     echo "connected device: ${device}" >"${debug_log}"
 
     # check if device is rooted
