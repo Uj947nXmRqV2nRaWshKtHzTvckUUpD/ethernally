@@ -27,16 +27,15 @@
 * scrpy must be installed or set to system PATH (clone from: https://github.com/Genymobile/scrcpy)
 * To permanently set Android props to allow Wi-Fi adb connections at all times, it is required to have the device rooted (you can use magisk).
 * You might need an USB cable for resolving potential connectivity issues in USB debugging mode. If the tool asks for it, just plug it between your device and your PC while having USB debugging enabled. (To unlock the hidden Developer tools/options menu, go to Android Settings > About > Press on 'build number' 7 times. Then go to android settings > developer tools/options and enable USB debugging)
+* chmod +x ethernally.sh # make the script executable
+* Situational:
+dos2unix ethernally.sh #might be needed to convert line endings to unix format (eg. when using Github for Desktop)
+* Note: perl is required (should be installed by default on most linux systems, but needs to be installed if using cygwin)
 </details>
 
 <details>
   <summary>How To Run</summary> 
 
-* Prerequisites:
-```
-  # perl is required (eg. in cygwin)
-dos2unix ethernally.sh #optional, might be needed to convert line endings to unix format (eg. when using Github for Desktop)
-chmod +x ethernally.sh #make the script executable
 ```
 * Simply run the script from its folder (`cd ethernally`) and follow the intuitive wizard guide:
 ```
