@@ -37,7 +37,7 @@ dos2unix ethernally.sh #might be needed to convert line endings to unix format (
   <summary>How To Run</summary> 
 
 ```
-* Simply run the script from its folder (`cd ethernally`) and follow the intuitive wizard guide:
+* Simply run the script from its folder (`cd ethernally`) and follow the intuitive wizard guide
 ```
 ./ethernally.sh
 ```
