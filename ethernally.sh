@@ -180,7 +180,7 @@ usb_connection() {
     # if device is not rooted
     if [ ${rooted} -eq 0 ]; then
         echo "Device is not rooted. Moving on.."
-        adb tcpip 5555
+        adb tcpip ${port}
         sleep 5
         # give adb some time to restart. do now lower this timeout!
     else
