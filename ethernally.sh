@@ -308,10 +308,17 @@ mirror() {
     # renderDriver="--render-driver=direct3d" #direct3d, opengl (slower, prone to crash with segmentation fault on Windows) ; comment to automatically detect best driver
     maxFps="--max-fps"
     maxFpsValue="45"
-    bitRate="--bit-rate"
-    bitRateValue="6M"
+    
+    # obsoleted in scrcpy v2
+    # bitRate="--bit-rate"
+    # bitRateValue="6M"
+    # replaced by
+    videoBitRate="--video-bit-rate"
+    videoBitRateValue="4M"
+    audioBitRate="--audio-bit-rate"
+    audioBitRateValue="320K"
 
-    options=$(printf %s "${socket} ${stayAwake} ${turnScreenOff} ${maxSize} ${maxSizeValue} ${maxFps} ${maxFpsValue} ${bitRate} ${bitRateValue}")
+    options=$(printf %s "${socket} ${stayAwake} ${turnScreenOff} ${maxSize} ${maxSizeValue} ${maxFps} ${maxFpsValue} ${videoBitRate} ${videoBitRateValue} ${audioBitRate} ${audioBitRateValue}")
     # options=$(printf %s)
     # echo "${options}"
 
