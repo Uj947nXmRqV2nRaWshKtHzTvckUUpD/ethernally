@@ -300,7 +300,7 @@ mirror() {
 
     echo "Attempting screen mirroring.."
 
-    stayAwake="--stay-awake"
+    #stayAwake="--stay-awake" # stay-awake disabled due to bug https://github.com/fusionneur/ethernally/issues/21
     turnScreenOff="--turn-screen-off"
     maxSize="--max-size"
     # Max resollution Full HD (1920), 2K (2160), 4K (4096)..
@@ -319,8 +319,7 @@ mirror() {
     audioBitRateValue="320K"
 
     options=$(printf %s "${socket} ${stayAwake} ${turnScreenOff} ${maxSize} ${maxSizeValue} ${maxFps} ${maxFpsValue} ${videoBitRate} ${videoBitRateValue} ${audioBitRate} ${audioBitRateValue}")
-    # options=$(printf %s)
-    # echo "${options}"
+    echo "Parameters: ${options}"
 
     scrcpyCommand="scrcpy -s ${options} &"
     # scrcpyCommand="scrcpy --tcpip=${options} &"
