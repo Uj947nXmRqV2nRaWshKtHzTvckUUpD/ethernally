@@ -39,16 +39,15 @@
 <details>
   <summary>How To Run</summary> 
 
-* Simply run the script from its folder (`cd ethernally`) and follow the intuitive wizard guide
 * On first time attempt, you should turn on 'disable adb authorization timeout' under android developer settings. This disables automatic revocation of adb authorizations for systems that have not reconnected within the default (7 days) or user-configured (minimum 1 day) amount of time. However this could lower the security of your device!
-* Note: Wireless debugging is not needed to be enabled under developer options
-* On first time attempt, USB cable will be required and you must set cable in transfer mode to enable debug mode. Afterwards, authorize the device and check the box to remember
-* 
+* To launch ethernally, simply run the script from its folder (`cd ethernally`) and follow the intuitive wizard guide
 ```
 chmod +x ethernally.sh # make the script executable (run only once)
 dos2unix ethernally.sh # situational: might be needed to convert line endings to unix format (eg. when using Github for Desktop) (run only once)
 ./ethernally.sh
 ```
+* Note: Wireless debugging is not needed to be enabled under developer options
+* On first time attempt, USB cable will be required and you must set cable in transfer mode to enable debug mode. Afterwards, authorize the device and check the box to remember
 * You could also add ethernally folder to system path (linux) or to the environment variable PATH (windows), and call it from terminal (eg. `ethernally.sh`)
 * Alternatively, you could create a symlink in your preferred location (eg. on your Linux Desktop)
 * You could even add a shortcut on Windows (cygwin) to launch screen mirroring upon execution. To do that, set shortcut's target similar to this:
