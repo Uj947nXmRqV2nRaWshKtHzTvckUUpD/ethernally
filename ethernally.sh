@@ -305,6 +305,7 @@ mirror() {
     # See also shortcuts: https://github.com/Genymobile/scrcpy/blob/master/doc/shortcuts.md
     
     # stayAwake="--stay-awake" # stay-awake disabled. https://github.com/fusionneur/ethernally/issues/21. If the device is not plugged in (i.e. only connected over TCP/IP), --stay-awake has no effect (this is the Android behavior).
+    # WARNING: developer options -> disable permission monitoring --- could help with this but reduces device security. Don't enable it !
 
 
     # turnScreenOff="--turn-screen-off" # on Android 12, app lock screen and fingerprint security popup show black screen on scrcpy => keep screen on so that you can easilly unlock/authorize
@@ -618,3 +619,7 @@ fi
 # adb connect <socket> # will show "failed to authenticate to <socket>" and also a popup will appear on the device to "Allow USB debugging" for the computer's RSA key fingerprint.
 # adb connect <socket> # will show "already connected to <socket>"
 # adb devices # will show "<socket> unauthorized"
+
+
+
+
