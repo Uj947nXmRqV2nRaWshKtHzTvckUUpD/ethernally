@@ -319,7 +319,7 @@ mirror() {
     maxFpsValue="60" # scrcpy matches with video FPS running on device (eg. even if you have 90 FPS set, if the video runs at 24 FPS this will take precedence). You can monitor FPS with ALT+I
     
     videoBitRate="--video-bit-rate"
-    videoBitRateValue="10M" # or lower (4MB) for compatibility. scrcpy automatically lowers FPS and bitrate if needed
+    videoBitRateValue="20M" # or lower (4MB) for compatibility. scrcpy automatically lowers FPS and bitrate if needed
    
     audioBitRate="--audio-bit-rate"
     audioBitRateValue="320K"

@@ -26,13 +26,14 @@
 
 * scrpy must be installed or set to system PATH (clone from: https://github.com/Genymobile/scrcpy)
 * To permanently set Android props to allow Wi-Fi adb connections at all times, it is required to have the device rooted (you can use magisk).
-* You need an USB cable for first time setup and eventually for fixing potential connectivity issues in USB debugging mode. If the tool asks for it, just plug it between your device and your PC while having USB debugging enabled. 
+* You need an USB cable for first time setup and eventually later for fixing other potential connectivity issues - in USB debugging mode. If the tool asks for it, just plug it between your device and your PC while having USB debugging enabled. 
 * To unlock the hidden Developer tools/options menu, go to Android Settings > About > Press on 'build number' 7 times. Then go to android settings > developer tools/options and enable USB debugging
-* chmod +x ethernally.sh # make the script executable
-* Situational:
-dos2unix ethernally.sh #might be needed to convert line endings to unix format (eg. when using Github for Desktop)
+* Also, under developer tools -> default USB configuration -> set to 'No data transfer' (https://github.com/Genymobile/scrcpy/issues/597)
 * Note: perl is required (should be installed by default on most linux systems, but needs to be installed if using cygwin)
 * Warning: live wallpapers might decrease mirroring performance
+* Warning: lock screen and app lock will show black in the mirrored screen (Android 12+) (https://github.com/Genymobile/scrcpy/issues/3413)
+* Warning: if you encounter any bug, it might be actually related to scrcpy rather than ethernally
+* Warning: if device gets locked, connection might be killed (https://github.com/Genymobile/scrcpy/issues/3334)
 </details>
 
 <details>
@@ -42,7 +43,10 @@ dos2unix ethernally.sh #might be needed to convert line endings to unix format (
 * On first time attempt, you should turn on 'disable adb authorization timeout' under android developer settings. This disables automatic revocation of adb authorizations for systems that have not reconnected within the default (7 days) or user-configured (minimum 1 day) amount of time. However this could lower the security of your device!
 * Note: Wireless debugging is not needed to be enabled under developer options
 * On first time attempt, USB cable will be required and you must set cable in transfer mode to enable debug mode. Afterwards, authorize the device and check the box to remember
+* 
 ```
+chmod +x ethernally.sh # make the script executable (run only once)
+dos2unix ethernally.sh # situational: might be needed to convert line endings to unix format (eg. when using Github for Desktop) (run only once)
 ./ethernally.sh
 ```
 * You could also add ethernally folder to system path (linux) or to the environment variable PATH (windows), and call it from terminal (eg. `ethernally.sh`)
