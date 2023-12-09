@@ -9,7 +9,7 @@
  
 * Mirrors your screen wirelessly with scrcpy
 * New! Support for non-rooted devices
-* New! Supports Android 12
+* New! Supports Android 14
 * Automatically adds Wi-Fi adb connection capability at boot [root only]
 * Connects through adb via Wi-Fi or USB cable
 * Remembers last known working Wi-Fi IP for fast connection
@@ -26,27 +26,46 @@
 
 * scrpy must be installed or set to system PATH (clone from: https://github.com/Genymobile/scrcpy)
 * To permanently set Android props to allow Wi-Fi adb connections at all times, it is required to have the device rooted (you can use magisk).
-* You might need an USB cable for resolving potential connectivity issues in USB debugging mode. If the tool asks for it, just plug it between your device and your PC while having USB debugging enabled. (To unlock the hidden Developer tools/options menu, go to Android Settings > About > Press on 'build number' 7 times. Then go to android settings > developer tools/options and enable USB debugging)
+* You need an USB cable for first time setup and eventually for fixing potential connectivity issues in USB debugging mode. If the tool asks for it, just plug it between your device and your PC while having USB debugging enabled. 
+* To unlock the hidden Developer tools/options menu, go to Android Settings > About > Press on 'build number' 7 times. Then go to android settings > developer tools/options and enable USB debugging
 * chmod +x ethernally.sh # make the script executable
 * Situational:
 dos2unix ethernally.sh #might be needed to convert line endings to unix format (eg. when using Github for Desktop)
 * Note: perl is required (should be installed by default on most linux systems, but needs to be installed if using cygwin)
+* Warning: live wallpapers might decrease mirroring performance
 </details>
 
 <details>
   <summary>How To Run</summary> 
 
-
 * Simply run the script from its folder (`cd ethernally`) and follow the intuitive wizard guide
+* On first time attempt, you should turn on 'disable adb authorization timeout' under android developer settings. This disables automatic revocation of adb authorizations for systems that have not reconnected within the default (7 days) or user-configured (minimum 1 day) amount of time. However this could lower the security of your device!
+* Note: Wireless debugging is not needed to be enabled under developer options
+* On first time attempt, USB cable will be required and you must set cable in transfer mode to enable debug mode. Afterwards, authorize the device and check the box to remember
 ```
 ./ethernally.sh
 ```
-* You could also add it to system path (linux) or to the environment variables (cygwin), and call it from anywhere (eg. `ethernally`)
+* You could also add ethernally folder to system path (linux) or to the environment variable PATH (windows), and call it from terminal (eg. `ethernally.sh`)
 * Alternatively, you could create a symlink in your preferred location (eg. on your Linux Desktop)
 * You could even add a shortcut on Windows (cygwin) to launch screen mirroring upon execution. To do that, set shortcut's target similar to this:
 ```
 C:\cygwin\bin\mintty.exe /usr/bin/bash --login "/cygdrive/c/GitHub/ethernally/ethernally.sh"
 ```
+* See also scrcpy shortcuts (using ALT key) to manage your mirrored device: https://github.com/Genymobile/scrcpy/blob/master/doc/shortcuts.md
+USEFUL ACTION SHORTCUTS
+#MOD = alt key
+HOME	MOD+h | Middle-click
+BACK	MOD+b | Right-click²
+APP_SWITCH	MOD+s
+Switch fullscreen mode	MOD+f
+Rotate device screen	MOD+r
+Turn device screen off (keep mirroring)	MOD+o
+Turn device screen on	MOD+Shift+o
+Power on	Right-click (if previously locked)
+POWER BUTTON	MOD+p (aka lock/unlock OR long press for power menu OR very long press for power off)
+Click on VOLUME_UP	MOD+↑ (up)
+Click on VOLUME_DOWN	MOD+↓ (down)
+Resize window to remove black borders	MOD+w
   </details>
 
 <details>

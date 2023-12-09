@@ -300,21 +300,27 @@ mirror() {
 
     echo "Attempting screen mirroring.."
 
-    #stayAwake="--stay-awake" # stay-awake disabled due to bug https://github.com/fusionneur/ethernally/issues/21
-    turnScreenOff="--turn-screen-off"
+
+    # REF: https://github.com/Genymobile/scrcpy/blob/master/doc/device.md
+    # See also shortcuts: https://github.com/Genymobile/scrcpy/blob/master/doc/shortcuts.md
+    
+    # stayAwake="--stay-awake" # stay-awake disabled. https://github.com/fusionneur/ethernally/issues/21. If the device is not plugged in (i.e. only connected over TCP/IP), --stay-awake has no effect (this is the Android behavior).
+
+
+    # turnScreenOff="--turn-screen-off" # on Android 12, app lock screen and fingerprint security popup show black screen on scrcpy => keep screen on so that you can easilly unlock/authorize
+
     maxSize="--max-size"
     # Max resollution Full HD (1920), 2K (2160), 4K (4096)..
     maxSizeValue="1920"
-    # renderDriver="--render-driver=direct3d" #direct3d, opengl (slower, prone to crash with segmentation fault on Windows) ; comment to automatically detect best driver
-    maxFps="--max-fps"
-    maxFpsValue="45"
     
-    # obsoleted in scrcpy v2
-    # bitRate="--bit-rate"
-    # bitRateValue="6M"
-    # replaced by
+    # renderDriver="--render-driver=direct3d" #direct3d, opengl (slower, prone to crash with segmentation fault on Windows) ; comment to automatically detect best driver
+    
+    maxFps="--max-fps"
+    maxFpsValue="60" # scrcpy matches with video FPS running on device (eg. even if you have 90 FPS set, if the video runs at 24 FPS this will take precedence). You can monitor FPS with ALT+I
+    
     videoBitRate="--video-bit-rate"
-    videoBitRateValue="4M"
+    videoBitRateValue="10M" # or lower (4MB) for compatibility. scrcpy automatically lowers FPS and bitrate if needed
+   
     audioBitRate="--audio-bit-rate"
     audioBitRateValue="320K"
     # on Android 12+, audio works out of the box
