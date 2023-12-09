@@ -317,6 +317,8 @@ mirror() {
     videoBitRateValue="4M"
     audioBitRate="--audio-bit-rate"
     audioBitRateValue="320K"
+    # on Android 12+, audio works out of the box
+    # REF: https://github.com/Genymobile/scrcpy/blob/master/doc/audio.md
 
     options=$(printf %s "${socket} ${stayAwake} ${turnScreenOff} ${maxSize} ${maxSizeValue} ${maxFps} ${maxFpsValue} ${videoBitRate} ${videoBitRateValue} ${audioBitRate} ${audioBitRateValue}")
     echo "Parameters: ${options}"
