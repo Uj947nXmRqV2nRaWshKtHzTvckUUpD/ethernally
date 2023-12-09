@@ -52,6 +52,7 @@ dos2unix ethernally.sh #might be needed to convert line endings to unix format (
 C:\cygwin\bin\mintty.exe /usr/bin/bash --login "/cygdrive/c/GitHub/ethernally/ethernally.sh"
 ```
 * See also scrcpy shortcuts (using ALT key) to manage your mirrored device: https://github.com/Genymobile/scrcpy/blob/master/doc/shortcuts.md
+```
 USEFUL ACTION SHORTCUTS
 #MOD = alt key
 HOME	MOD+h | Middle-click
@@ -66,6 +67,7 @@ POWER BUTTON	MOD+p (aka lock/unlock OR long press for power menu OR very long pr
 Click on VOLUME_UP	MOD+↑ (up)
 Click on VOLUME_DOWN	MOD+↓ (down)
 Resize window to remove black borders	MOD+w
+```
   </details>
 
 <details>
