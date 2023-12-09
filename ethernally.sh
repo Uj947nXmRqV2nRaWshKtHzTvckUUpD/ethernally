@@ -327,7 +327,7 @@ mirror() {
     # on Android 12+, audio works out of the box
     # REF: https://github.com/Genymobile/scrcpy/blob/master/doc/audio.md
 
-    options=$(printf %s "${socket} ${stayAwake} ${turnScreenOff} ${maxSize} ${maxSizeValue} ${maxFps} ${maxFpsValue} ${videoBitRate} ${videoBitRateValue} ${audioBitRate} ${audioBitRateValue}")
+    options=$(printf %s "${socket} ${maxSize} ${maxSizeValue} ${maxFps} ${maxFpsValue} ${videoBitRate} ${videoBitRateValue} ${audioBitRate} ${audioBitRateValue}")
     echo "Parameters: ${options}"
 
     scrcpyCommand="scrcpy -s ${options} &"
@@ -337,6 +337,8 @@ mirror() {
     # Eg. # scrcpy -s <IP> --stay-awake --turn-screen-off --max-size 1920 --max-fps 45 --bit-rate 6M
 
     # scrcpy -s "${socket}" "${options[@]}" &
+
+    # removed flags: ${stayAwake} ${turnScreenOff}
 
     eval "${scrcpyCommand}"
     # "${options}" &
@@ -480,7 +482,7 @@ else
     echo "socket not null. Devices were attatched."
 
     echo "Attempting ADB connection via Wi-Fi to the attatched device. Please wait..."
-    status=$(adb connect ${socket})
+    status=$(adb connect "${socket}")
     # adb returns exit code 0 even if it cannot connect. not reliable... Need extra error handling:
 
     if [ "${status#*failed}" != "${status}" ]; then
@@ -497,7 +499,7 @@ else
         echo "DEBUG> killing adb server.."
         adb kill-server
         echo "Re-attempting ADB connection via Wi-Fi to the attatched device. Please wait..."
-        status=$(adb connect ${socket})
+        status=$(adb connect "${socket}")
         if [ "${status#*cannot}" = "${status}" ] && [ "${status#*failed}" = "${status}" ]; then
             # posix trick to determine if status contains words "failed" or "cannot"
 
@@ -549,7 +551,7 @@ echo "socket: ${socket}"
 echo "connected: ${connected}"
 echo ""
 
-if [ ${connected} = 1 ] && [ -n "${socket}" ] && [ ${socket} != "null" ]; then
+if [ ${connected} = 1 ] && [ -n "${socket}" ] && [ "${socket}" != "null" ]; then
 
     # (device is already attached via (tcp/wifi)). Case (wifi 1 ; usb 0) OR (wifi 1 ; usb 1)
 
@@ -560,7 +562,7 @@ if [ ${connected} = 1 ] && [ -n "${socket}" ] && [ ${socket} != "null" ]; then
     echo "connected device: ${device}" >"${debug_log}"
 
     # check if device is rooted
-    check_root ${device}
+    check_root "${device}"
 
     # if device is not rooted
     if [ "${rooted}" = 0 ]; then
